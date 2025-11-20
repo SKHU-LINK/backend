@@ -82,7 +82,7 @@ public class AuthService {
             User user = userRepository.findById(Long.parseLong(claims.getSubject()))
                     .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
-            if (user.isBANNED()) {
+            if (user.isBanned()) {
                 throw new GlobalException(ErrorCode.USER_BANNED);
             }
 
