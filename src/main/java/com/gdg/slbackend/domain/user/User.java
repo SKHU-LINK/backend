@@ -48,6 +48,7 @@ public class User extends BaseTimeEntity {
     private LocalDateTime lastLoginAt;
 
     protected User() {
+        // JPA 기본 생성자
     }
 
     public User(
@@ -114,6 +115,10 @@ public class User extends BaseTimeEntity {
 
     public void increaseMileage(int amount) {
         this.mileage += amount;
+    }
+
+    public void useMileage(int amount) {
+        this.mileage -= amount;
     }
 
     public void ban() {

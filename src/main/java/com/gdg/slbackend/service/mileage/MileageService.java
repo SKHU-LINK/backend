@@ -18,6 +18,7 @@ public class MileageService {
 
     /**
      * 질문 게시글에 대한 답변 댓글 작성 시 호출하여 mileage를 +1 증가시킴.
+     * 이거 게시판에 나중에 연결해주삼
      */
     @Transactional
     public void earnForQuestionAnswer(Long commenterId) {

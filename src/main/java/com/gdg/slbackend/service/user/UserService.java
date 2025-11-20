@@ -55,4 +55,28 @@ public class UserService {
 
         user.ban();
     }
+
+    public int getMileage(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+
+        return user.getMileage();
+    }
+
+    @Transactional
+    public int useMileage(Long userId, int amount) {
+        if (amount <= 0) {
+            throw new GlobalException(ErrorCode.INVALID_REQUEST);
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getMileage() < amount) {
+            throw new GlobalException(ErrorCode.INSUFFICIENT_MILEAGE);
+        }
+
+        user.useMileage(amount);
+        return user.getMileage();
+    }
 }
