@@ -3,6 +3,7 @@ package com.gdg.slbackend.api.user;
 import com.gdg.slbackend.api.user.dto.UserResponse;
 import com.gdg.slbackend.global.response.ApiResponse;
 import com.gdg.slbackend.service.user.UserService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,10 +28,10 @@ public class UserController {
 
     @PostMapping("/me/nickname")
     public ApiResponse<Void> updateNickname(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal com.gdg.slbackend.global.security.UserPrincipal principal,
             @RequestParam String nickname
     ) {
-        userService.updateNickname(userId, nickname);
+        userService.updateNickname(principal.getId(), nickname);
         return ApiResponse.success();
     }
 }

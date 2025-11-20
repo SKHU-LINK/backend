@@ -15,9 +15,11 @@ public enum ErrorCode {
     FORBIDDEN("권한이 없습니다."),
 
     USER_NOT_FOUND("사용자를 찾을 수 없습니다."),
+    USER_BANNED("차단된 사용자입니다."),
     COMMUNITY_NOT_FOUND("커뮤니티를 찾을 수 없습니다."),
     ALREADY_JOINED("이미 가입된 상태입니다."),
-    NOT_COMMUNITY_MEMBER("커뮤니티 멤버가 아닙니다.");
+    NOT_COMMUNITY_MEMBER("커뮤니티 멤버가 아닙니다."),
+    INVALID_REPORT_TARGET("게시글 또는 댓글 중 하나만 신고해야 합니다.");
 
     private final String message;
 

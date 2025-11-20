@@ -3,6 +3,8 @@ package com.gdg.slbackend.domain.user;
 import com.gdg.slbackend.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "users")
 public class User extends BaseTimeEntity {
@@ -36,11 +38,16 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private UserRole role;
 
+    @Column(nullable = false)
+    private int mileage;
+
+    @Column(nullable = false)
+    private boolean isBanned;
+
     @Column
-    private String lastLoginAt;
+    private LocalDateTime lastLoginAt;
 
     protected User() {
-        // JPA 기본 생성자
     }
 
     public User(
@@ -57,6 +64,8 @@ public class User extends BaseTimeEntity {
         this.displayName = displayName;
         this.nickname = nickname;
         this.role = role;
+        this.mileage = 0;
+        this.isBanned = false;
     }
 
     public Long getId() {
@@ -87,7 +96,15 @@ public class User extends BaseTimeEntity {
         return role;
     }
 
-    public String getLastLoginAt() {
+    //public int getMileage() {
+    //    return mileage;
+    //}
+
+    public boolean isBanned() {
+        return isBanned;
+    }
+
+    public LocalDateTime getLastLoginAt() {
         return lastLoginAt;
     }
 
@@ -95,7 +112,15 @@ public class User extends BaseTimeEntity {
         this.nickname = nickname;
     }
 
-    public void updateLastLoginAt(String time) {
+    //public void increaseMileage(int amount) {
+    //    this.mileage += amount;
+    //}
+
+    public void ban() {
+        this.isBanned = true;
+    }
+
+    public void updateLastLoginAt(LocalDateTime time) {
         this.lastLoginAt = time;
     }
 }
