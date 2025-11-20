@@ -34,7 +34,6 @@ public class UserController {
             @AuthenticationPrincipal com.gdg.slbackend.global.security.UserPrincipal principal,
             @RequestParam String nickname
     ) {
-        userService.updateNickname(userId, nickname);
         userService.updateNickname(principal.getId(), nickname);
         return ApiResponse.success();
     }
