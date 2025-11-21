@@ -20,63 +20,63 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
 
-  # mvc:
-  #   pathmatch:
-  #     matching-strategy: ant_path_matcher
+    mvc:
+      pathmatch:
+        matching-strategy: ant_path_matcher
 
-  # jackson:
-  #   serialization:
-  #     fail-on-empty-beans: false
+    jackson:
+      serialization:
+        fail-on-empty-beans: false
 
   servlet:
     multipart:
       max-file-size: 20MB
       max-request-size: 20MB
 
-  # security:
-  #   oauth2:
-  #     client:
-  #       registration:
-  #         microsoft:
-  #           client-id: ${MS_CLIENT_ID}
-  #           client-secret: ${MS_CLIENT_SECRET}
-  #           scope:
-  #             - openid
-  #             - profile
-  #             - email
-  #           redirect-uri: "{baseUrl}/auth/microsoft/callback"
-  #           authorization-grant-type: authorization_code
-  #       provider:
-  #         microsoft:
-  #           authorization-uri: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
-  #           token-uri: https://login.microsoftonline.com/common/oauth2/v2.0/token
-  #           user-info-uri: https://graph.microsoft.com/oidc/userinfo
-  #           user-name-attribute: sub
+  security:
+    oauth2:
+      client:
+        registration:
+          microsoft:
+            client-id: ${MS_CLIENT_ID}
+            client-secret: ${MS_CLIENT_SECRET}
+            scope:
+              - openid
+              - profile
+              - email
+            redirect-uri: "{baseUrl}/auth/microsoft/callback"
+            authorization-grant-type: authorization_code
+        provider:
+          microsoft:
+            authorization-uri: https://login.microsoftonline.com/${MS_TENANT_ID}/oauth2/v2.0/authorize
+            token-uri: https://login.microsoftonline.com/${MS_TENANT_ID}/oauth2/v2.0/token
+            user-info-uri: https://graph.microsoft.com/oidc/userinfo
+            user-name-attribute: sub
 
-# jwt:
-#   secret: ${JWT_SECRET}
-#   access-token-expiration: 3600000
-#   refresh-token-expiration: 1209600000
+  jwt:
+    secret: ${JWT_SECRET}
+    access-token-expiration: 3600000
+    refresh-token-expiration: 1209600000
 
-# cloud:
-#   aws:
-#     credentials:
-#       access-key: ${AWS_ACCESS_KEY}
-#       secret-key: ${AWS_SECRET_KEY}
-#     s3:
-#       bucket: ${AWS_S3_BUCKET}
-#     region:
-#       static: ap-northeast-2
-#     stack:
-#       auto: false
+  # cloud:
+  #   aws:
+  #     credentials:
+  #       access-key: ${AWS_ACCESS_KEY}
+  #       secret-key: ${AWS_SECRET_KEY}
+  #     s3:
+  #       bucket: ${AWS_S3_BUCKET}
+  #     region:
+  #       static: ap-northeast-2
+  #     stack:
+  #       auto: false
 
-# cors:
-#   allowed-origins:
-#     - http://localhost:3000
-#     - https://your-frontend-domain.com
-#   allowed-methods: GET, POST, PUT, PATCH, DELETE, OPTIONS
-#   allowed-headers: "*"
-#   allow-credentials: true
+  cors:
+    allowed-origins:
+      - http://localhost:3000
+      - https://your-frontend-domain.com
+    allowed-methods: GET, POST, PUT, PATCH, DELETE, OPTIONS
+    allowed-headers: "*"
+    allow-credentials: true
 
 # logging:
 #   level:
