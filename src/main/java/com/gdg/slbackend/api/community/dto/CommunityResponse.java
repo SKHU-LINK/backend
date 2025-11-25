@@ -9,15 +9,15 @@ public class CommunityResponse {
     private String name;
     private int year;
     private int semester;
-    private String adminName;
+    private String adminNickname;
 
-    public static CommunityResponse from(Community community, String adminName) {
+    public static CommunityResponse from(Community community) {
         return CommunityResponse.builder()
                 .id(community.getId())
                 .name(community.getName())
                 .year(community.getYear())
                 .semester(community.getSemester())
-                .adminName(adminName)
+                .adminNickname(community.getAdmin().getNickname())
                 .build();
     }
 }

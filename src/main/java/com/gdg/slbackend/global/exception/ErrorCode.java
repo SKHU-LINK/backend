@@ -19,7 +19,16 @@ public enum ErrorCode {
     ALREADY_JOINED("이미 가입된 상태입니다."),
     NOT_COMMUNITY_MEMBER("커뮤니티 멤버가 아닙니다."),
     INVALID_REPORT_TARGET("게시글 또는 댓글 중 하나만 신고해야 합니다."),
-    INSUFFICIENT_MILEAGE("마일리지가 부족합니다.");
+    INSUFFICIENT_MILEAGE("마일리지가 부족합니다."),
+
+    /**
+     * 커뮤니티 관련 에러 코드
+     * */
+    COMMUNITY_INVALID_YEAR("연도는 1900부터 3000 사이여야 합니다."),
+    COMMUNITY_INVALID_SEMESTER("학기는 1 또는 2여야 합니다."),
+    COMMUNITY_NOT_ADMIN("커뮤니티 관리자만 수행할 수 있는 작업입니다.")
+
+    ;
 
     private final String message;
 

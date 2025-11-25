@@ -36,35 +36,35 @@ public class CommunityMembership {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "community_id")
-    private Community commynity;
+    private Community community;
 
     private Role role;
 
-    private Boolean isPinned;
+    private boolean isPinned;
 
-    private Boolean isBanned;
+    private boolean isBanned;
 
     private LocalDate joinedAt;
 
     @Builder
-    protected CommunityMembership(Role role, Boolean isPinned, Boolean isBanned, LocalDate joinedAt, User user, Community community) {
+    protected CommunityMembership(Role role, boolean isPinned, boolean isBanned, LocalDate joinedAt, User user, Community community) {
         this.role = role;
         this.isPinned = isPinned;
         this.isBanned = isBanned;
         this.joinedAt = joinedAt;
         this.user = user;
-        this.commynity = community;
+        this.community = community;
     }
 
     public void updateRole(Role role) {
         this.role = role;
     }
 
-    public void updateIsPinned(Boolean isPinned) {
+    public void updateIsPinned(boolean isPinned) {
         this.isPinned = isPinned;
     }
 
-    public void updateIsBanned(Boolean isBanned) {
+    public void updateIsBanned(boolean isBanned) {
         this.isBanned = isBanned;
     }
 }

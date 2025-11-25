@@ -1,11 +1,14 @@
 package com.gdg.slbackend.domain.community;
 
+import com.gdg.slbackend.domain.user.User;
 import com.gdg.slbackend.global.entity.BaseTimeEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -33,18 +36,19 @@ public class Community extends BaseTimeEntity {
 
     private int semester;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
-    private Long createdByUserId;
+    private User admin;
 
     @Builder
-    protected Community(String name, int year, int semester, LocalDate createdAt, LocalDate updateAt, Long createdByUserId) {
+    protected Community(String name, int year, int semester, LocalDate createdAt, LocalDate updateAt, User admin) {
         this.name = name;
         this.year = year;
         this.semester = semester;
-        this.createdByUserId = createdByUserId;
+        this.admin = admin;
     }
 
-    public void updateCreatedByUserId(Long userId) {
-        this.createdByUserId = userId;
+    public void updateCreatedByUserId(User admin) {
+        this.admin = admin;
     }
 }
