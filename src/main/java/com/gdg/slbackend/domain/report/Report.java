@@ -3,9 +3,16 @@ package com.gdg.slbackend.domain.report;
 import com.gdg.slbackend.domain.user.User;
 import com.gdg.slbackend.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import static lombok.AccessLevel.PROTECTED;
+
+@Getter
 @Entity
 @Table(name = "reports")
+@NoArgsConstructor(access = PROTECTED)
 public class Report extends BaseTimeEntity {
 
     @Id
@@ -31,9 +38,8 @@ public class Report extends BaseTimeEntity {
     @Column
     private String reason;
 
-    protected Report() {}
-
-    public Report(
+    @Builder
+    private Report(
             User reporter,
             User reportedUser,
             Long postId,
@@ -46,11 +52,4 @@ public class Report extends BaseTimeEntity {
         this.commentId = commentId;
         this.reason = reason;
     }
-
-    public Long getId() { return id; }
-    public User getReporter() { return reporter; }
-    public User getReportedUser() { return reportedUser; }
-    public Long getPostId() { return postId; }
-    public Long getCommentId() { return commentId; }
-    public String getReason() { return reason; }
 }

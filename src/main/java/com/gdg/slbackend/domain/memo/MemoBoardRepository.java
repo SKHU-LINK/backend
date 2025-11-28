@@ -1,7 +1,10 @@
 package com.gdg.slbackend.domain.memo;
 
-import com.gdg.slbackend.domain.memo.MemoBoard;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface MemoBoardRepository extends JpaRepository<MemoBoard, Long> {
+
+    Optional<MemoBoard> findFirstByOrderByIdAsc();
 }

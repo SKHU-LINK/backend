@@ -47,8 +47,4 @@ public class MemoBoard {
     public void updateDescription(String description) {
         this.description = description;
     }
-
-    public void assignId(Long id) {
-        this.id = id;
-    }
 }

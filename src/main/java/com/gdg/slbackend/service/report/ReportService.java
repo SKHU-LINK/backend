@@ -49,7 +49,14 @@ public class ReportService {
         User reportedUser = userRepository.findById(reportedUserId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
-        Report report = new Report(reporter, reportedUser, postId, commentId, reason);
+        Report report = Report.builder()
+                .reporter(reporter)
+                .reportedUser(reportedUser)
+                .postId(postId)
+                .commentId(commentId)
+                .reason(reason)
+                .build();
+
         reportRepository.save(report);
 
         long count = reportRepository.countByReportedUserId(reportedUserId);
