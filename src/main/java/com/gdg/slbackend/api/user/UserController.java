@@ -5,11 +5,14 @@ import com.gdg.slbackend.api.user.dto.UserResponse;
 import com.gdg.slbackend.global.response.ApiResponse;
 import com.gdg.slbackend.global.security.UserPrincipal;
 import com.gdg.slbackend.service.user.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
+@Tag(name = "User", description = "사용자 조회 및 마일리지 관리 API")
 public class UserController {
 
     /**
@@ -24,11 +27,13 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
+    @Operation(summary = "사용자 단건 조회")
     public ApiResponse<UserResponse> getUser(@PathVariable Long userId) {
         return ApiResponse.success(userService.getUserById(userId));
     }
 
     @PostMapping("/me/nickname")
+    @Operation(summary = "닉네임 변경")
     public ApiResponse<Void> updateNickname(
             @RequestParam Long userId,
             @AuthenticationPrincipal com.gdg.slbackend.global.security.UserPrincipal principal,
@@ -42,6 +47,7 @@ public class UserController {
      * 현재 로그인한 사용자의 마일리지를 조회함.
      */
     @GetMapping("/me/mileage")
+    @Operation(summary = "내 마일리지 조회")
     public ApiResponse<UserMileageResponse> getMyMileage(
             @AuthenticationPrincipal UserPrincipal principal
     ) {
@@ -54,6 +60,7 @@ public class UserController {
      * amount 만큼 차감하며, 부족할 경우 예외가 발생함.
      */
     @PostMapping("/me/mileage/use")
+    @Operation(summary = "내 마일리지 사용")
     public ApiResponse<UserMileageResponse> useMyMileage(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam int amount

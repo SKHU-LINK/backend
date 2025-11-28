@@ -3,11 +3,14 @@ package com.gdg.slbackend.api.report;
 import com.gdg.slbackend.global.response.ApiResponse;
 import com.gdg.slbackend.global.security.UserPrincipal;
 import com.gdg.slbackend.service.report.ReportService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/reports")
+@Tag(name = "Report", description = "게시글 및 댓글 신고 API")
 public class ReportController {
 
     private final ReportService service;
@@ -18,6 +21,7 @@ public class ReportController {
 
     // 게시글 신고
     @PostMapping("/posts/{postId}")
+    @Operation(summary = "게시글 신고")
     public ApiResponse<Void> reportPost(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long postId,
@@ -30,6 +34,7 @@ public class ReportController {
 
     // 댓글 신고
     @PostMapping("/comments/{commentId}")
+    @Operation(summary = "댓글 신고")
     public ApiResponse<Void> reportComment(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long commentId,
