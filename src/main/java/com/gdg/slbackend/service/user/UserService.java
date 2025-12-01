@@ -21,7 +21,7 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
-        return new UserResponse(user);
+        return UserResponse.from(user);
     }
 
     @Transactional
@@ -36,7 +36,7 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
-        return new UserResponse(user);
+        return UserResponse.from(user);  // ✅
     }
 
     @Transactional

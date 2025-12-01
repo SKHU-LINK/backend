@@ -1,8 +1,11 @@
 package com.gdg.slbackend.api.auth.dto;
 
+import lombok.Getter;
+
 /**
  * OAuth 로그인 성공 후 발급되는 JWT 토큰 응답.
  */
+@Getter
 public class AuthTokenResponse {
 
     private final String accessToken;
@@ -11,13 +14,5 @@ public class AuthTokenResponse {
     public AuthTokenResponse(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public String getRefreshToken() {
-        return refreshToken;
     }
 }

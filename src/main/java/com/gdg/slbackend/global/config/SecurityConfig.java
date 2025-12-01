@@ -43,6 +43,13 @@ public class SecurityConfig {
                 // OAuth2 로그인 과정에서는 세션이 필요할 수 있어서 IF_REQUIRED 유지
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
+                        // ===== Swagger / OpenAPI (익명 허용) =====
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+
                         // ===== Auth (익명 허용) =====
                         .requestMatchers(
                                 "/auth/login",

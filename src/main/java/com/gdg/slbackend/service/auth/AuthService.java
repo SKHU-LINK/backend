@@ -47,14 +47,15 @@ public class AuthService {
         }
 
         User user = userRepository.findByOauthProviderAndOauthSubject(MICROSOFT_PROVIDER, subject)
-                .orElseGet(() -> new User(
-                        MICROSOFT_PROVIDER,
-                        subject,
-                        email,
-                        displayName,
-                        nickname,
-                        UserRole.USER
-                ));
+                .orElseGet(() -> User.builder()
+                        .oauthProvider(MICROSOFT_PROVIDER)
+                        .oauthSubject(subject)
+                        .email(email)
+                        .displayName(displayName)
+                        .nickname(nickname)
+                        .role(UserRole.USER)
+                        .build()
+                );
 
         if (user.isBanned()) {
             throw new GlobalException(ErrorCode.USER_BANNED);
@@ -98,7 +99,7 @@ public class AuthService {
     public UserResponse toUserResponse(UserPrincipal principal) {
         User user = userRepository.findById(principal.getId())
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
-        return new UserResponse(user);
+        return UserResponse.from(user);
     }
 
     private String getAttribute(Map<String, Object> attributes, String primaryKey, String fallbackKey) {

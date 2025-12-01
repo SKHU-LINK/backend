@@ -2,11 +2,18 @@ package com.gdg.slbackend.domain.user;
 
 import com.gdg.slbackend.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import static lombok.AccessLevel.PROTECTED;
+
+@Getter
 @Entity
 @Table(name = "users")
+@NoArgsConstructor(access = PROTECTED)
 public class User extends BaseTimeEntity {
 
     /**
@@ -47,11 +54,8 @@ public class User extends BaseTimeEntity {
     @Column
     private LocalDateTime lastLoginAt;
 
-    protected User() {
-        // JPA 기본 생성자
-    }
-
-    public User(
+    @Builder
+    private User(
             String oauthProvider,
             String oauthSubject,
             String email,
@@ -67,46 +71,6 @@ public class User extends BaseTimeEntity {
         this.role = role;
         this.mileage = 0;
         this.isBanned = false;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getOauthProvider() {
-        return oauthProvider;
-    }
-
-    public String getOauthSubject() {
-        return oauthSubject;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    public int getMileage() {
-        return mileage;
-    }
-
-    public boolean isBanned() {
-        return isBanned;
-    }
-
-    public LocalDateTime getLastLoginAt() {
-        return lastLoginAt;
     }
 
     public void updateNickname(String nickname) {
