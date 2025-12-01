@@ -2,8 +2,10 @@ package com.gdg.slbackend.api.community.dto;
 
 import com.gdg.slbackend.domain.community.Community;
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
+@Getter
 public class CommunityResponse {
     private Long id;
     private String name;

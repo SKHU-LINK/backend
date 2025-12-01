@@ -7,7 +7,7 @@ import com.gdg.slbackend.domain.community.CommunityMembership;
 import com.gdg.slbackend.domain.user.User;
 import com.gdg.slbackend.global.exception.ErrorCode;
 import com.gdg.slbackend.global.exception.GlobalException;
-import com.gdg.slbackend.service.communityMembership.communityMembershipFinder;
+import com.gdg.slbackend.service.communityMembership.CommunityMembershipFinder;
 import com.gdg.slbackend.service.user.UserFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class CommunityService {
     private final CommunityUpdater communityUpdater;
     private final CommunityDeleter communityDeleter;
     private final UserFinder userFinder;
-    private final communityMembershipFinder communityMembershipFinder;
+    private final CommunityMembershipFinder communityMembershipFinder;
 
     public CommunityResponse createCommunity(CommunityRequest communityRequest, Long userId) {
         User user = userFinder.findByIdOrThrow(userId);
@@ -61,12 +61,19 @@ public class CommunityService {
                 .toList();
     }
 
-    /*
-    커뮤니티 관리자 변경에 대한 기능 회의가 끝난 뒤 구현
-    public CommunityResponse updateCommunityAdmin() {
-        return CommunityResponse.from();
+    @Transactional
+    public CommunityResponse updateCommunityAdmin(Long communityId, Long newAdminUserId, Long requestUserId) {
+        /* 해당 커뮤니티의 관리자가 아닌 경우 */
+        if(!communityMembershipFinder.isAdmin(communityId, requestUserId)) {
+            throw new GlobalException(ErrorCode.COMMUNITY_NOT_ADMIN);
+        }
+        /* 시스템 관리자가 아닌 경우 */
+        if(!userFinder.isSystemAdmin(requestUserId)) {
+            throw new GlobalException(ErrorCode.USER_NOT_SYSTEM_ADMIN);
+        }
+
+        return CommunityResponse.from(communityUpdater.updateCommunityAdmin(communityId, newAdminUserId));
     }
-    */
 
     public void deleteCommunity(Long communityId, Long userId) {
         if (communityMembershipFinder.isAdmin(userId, communityId)) {

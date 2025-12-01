@@ -13,14 +13,21 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class communityMembershipFinder {
+public class CommunityMembershipFinder {
     private final CommunityMembershipRepository communityMembershipRepository;
 
+    @Transactional
+    public CommunityMembership findByIdOrThrow(Long communityId, Long userId) {
+        return communityMembershipRepository
+                .findByUserIdAndCommunityId(communityId, userId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.INTERNAL_SERVER_ERROR));
+    }
+
     @Transactional(readOnly = true)
-    public CommunityMembership findAdminMembershipOrThrow(Long userId, Long communityId) {
+    public CommunityMembership findAdminMembershipOrThrow(Long communityId, Long userId) {
 
         CommunityMembership communityMembership = communityMembershipRepository
-                .findByUserIdAndCommunityId(userId, communityId)
+                .findByUserIdAndCommunityId(communityId, userId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.INTERNAL_SERVER_ERROR));
 
         if (communityMembership.getRole() != Role.ADMIN) {
@@ -31,17 +38,7 @@ public class communityMembershipFinder {
     }
 
     @Transactional(readOnly = true)
-    public boolean isAdmin(Long userId, Long communityId) {
-
-        CommunityMembership communityMembership = communityMembershipRepository
-                .findByUserIdAndCommunityId(userId, communityId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.INTERNAL_SERVER_ERROR));
-
-        return communityMembership.getRole() == Role.ADMIN;
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isPinned(Long userId, Long communityId) {
+    public boolean isPinned(Long communityId, Long userId) {
         CommunityMembership membership = communityMembershipRepository
                 .findByUserIdAndCommunityId(userId, communityId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.INTERNAL_SERVER_ERROR));
@@ -59,4 +56,12 @@ public class communityMembershipFinder {
 
         return memberships;
     }
+
+    @Transactional(readOnly = true)
+    public boolean isAdmin(Long communityId, Long userId) {
+        return communityMembershipRepository.existsByUserIdAndCommunityIdAndRole(
+                communityId, userId, Role.ADMIN
+        );
+    }
+
 }

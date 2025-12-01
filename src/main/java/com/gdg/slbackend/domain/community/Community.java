@@ -48,7 +48,7 @@ public class Community extends BaseTimeEntity {
         this.admin = admin;
     }
 
-    public void updateCreatedByUserId(User admin) {
+    public void updateAdmin(User admin) {
         this.admin = admin;
     }
 }

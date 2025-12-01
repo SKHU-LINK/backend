@@ -12,6 +12,7 @@ public enum ErrorCode {
 
     UNAUTHORIZED("인증이 필요합니다."),
     FORBIDDEN("권한이 없습니다."),
+    USER_NOT_SYSTEM_ADMIN("시스템 관리자만 수행할 수 있는 작업입니다."),
 
     USER_NOT_FOUND("사용자를 찾을 수 없습니다."),
     USER_BANNED("차단된 사용자입니다."),
