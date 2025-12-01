@@ -7,6 +7,7 @@ import com.gdg.slbackend.domain.community.CommunityMembership;
 import com.gdg.slbackend.domain.user.User;
 import com.gdg.slbackend.global.exception.ErrorCode;
 import com.gdg.slbackend.global.exception.GlobalException;
+import com.gdg.slbackend.service.communityMembership.CommunityMembershipCreator;
 import com.gdg.slbackend.service.communityMembership.CommunityMembershipFinder;
 import com.gdg.slbackend.service.user.UserFinder;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +26,17 @@ public class CommunityService {
     private final CommunityUpdater communityUpdater;
     private final CommunityDeleter communityDeleter;
     private final UserFinder userFinder;
+    private final CommunityMembershipCreator communityMembershipCreator;
     private final CommunityMembershipFinder communityMembershipFinder;
 
     public CommunityResponse createCommunity(CommunityRequest communityRequest, Long userId) {
         User user = userFinder.findByIdOrThrow(userId);
+
+        /*
+        * 해당 유저의 아이디로 멤버십 설정, admin 역할 부여?
+        * */
+
+
 
         return CommunityResponse.from(communityCreator.create(communityRequest, user));
     }
