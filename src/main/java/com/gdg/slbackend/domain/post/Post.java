@@ -19,29 +19,26 @@ public class Post extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Category category;
+    private String title;
+    private String content;
+    private Long views;
+    private boolean pinned;
 
     private Long communityId;
     private Long authorId;
-    private String authorName;
+    private String authorNickname;
     private Long thumbnailFileId;
 
-    private String title;
-    private String content;
-
-    private Category category;
-
-    private boolean pinned;
-
-    private Long views;
 
 //    필요성에 대한 의논 필요
     private LocalDate deletedAt;
 
     @Builder
-    public Post(Long communityId, Long authorId, String authorName, Long thumbnailFileId, String title, String content, Category category, boolean pinned, Long views, LocalDate deletedAt) {
+    public Post(Long communityId, Long authorId, String authorNickname, Long thumbnailFileId, String title, String content, Category category, boolean pinned, Long views, LocalDate deletedAt) {
         this.communityId = communityId;
         this.authorId = authorId;
-        this.authorName = authorName;
+        this.authorNickname = authorNickname;
         this.thumbnailFileId = thumbnailFileId;
         this.title = title;
         this.content = content;
@@ -51,8 +48,8 @@ public class Post extends BaseTimeEntity {
         this.deletedAt = deletedAt;
     }
 
-    public void updateAuthorName(String authorName) {
-        this.authorName = authorName;
+    public void updateauthorNickname(String authorNickname) {
+        this.authorNickname = authorNickname;
     }
 
     public void updateThumbnailFileId(Long thumbnailFileId) {
