@@ -48,7 +48,7 @@ public class Post extends BaseTimeEntity {
         this.deletedAt = deletedAt;
     }
 
-    public void updateauthorNickname(String authorNickname) {
+    public void updateAuthorNickname(String authorNickname) {
         this.authorNickname = authorNickname;
     }
 

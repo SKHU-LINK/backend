@@ -17,4 +17,6 @@ public class PostRequest {
 
     @NotNull
     private Category category;
+
+    private Long thumbnailFileId;
 }
