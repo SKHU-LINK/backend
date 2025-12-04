@@ -13,7 +13,7 @@ public class PostCreator {
     final private PostRepository postRepository;
     final private UserFinder userFinder;
 
-    public Post createPost(PostRequest postRequest, Long authorId) {
+    public Post createPost(PostRequest postRequest, Long authorId, String imageUrl) {
         return Post.builder()
                 .category(postRequest.getCategory())
                 .title(postRequest.getTitle())
@@ -23,7 +23,7 @@ public class PostCreator {
                 .communityId(postRequest.getCommunityId())
                 .authorId(authorId)
                 .authorNickname(userFinder.findUserNameByIdOrThrow(authorId))
-                .thumbnailFileId(postRequest.getThumbnailFileId())
+                .imageUrl(imageUrl)
                 .build();
     }
 }

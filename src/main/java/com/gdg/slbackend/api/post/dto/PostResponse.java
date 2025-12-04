@@ -10,6 +10,7 @@ public class PostResponse {
     private Long id;
     private String title;
     private String content;
+    private String imageUrl;
     private Long views;
     private boolean pinned;
 
@@ -22,6 +23,7 @@ public class PostResponse {
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
+                .imageUrl(post.getImageUrl())
                 .views(post.getViews())
                 .pinned(post.isPinned())
                 .authorId(post.getAuthorId())

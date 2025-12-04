@@ -4,6 +4,7 @@ import com.gdg.slbackend.global.enums.Category;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 public class PostRequest {
@@ -18,5 +19,5 @@ public class PostRequest {
     @NotNull
     private Category category;
 
-    private Long thumbnailFileId;
+    private MultipartFile multipartFile;
 }

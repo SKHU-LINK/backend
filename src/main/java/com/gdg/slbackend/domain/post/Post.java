@@ -28,18 +28,18 @@ public class Post extends BaseTimeEntity {
     private Long communityId;
     private Long authorId;
     private String authorNickname;
-    private Long thumbnailFileId;
+    private String imageUrl;
 
 
 //    필요성에 대한 의논 필요
     private LocalDate deletedAt;
 
     @Builder
-    public Post(Long communityId, Long authorId, String authorNickname, Long thumbnailFileId, String title, String content, Category category, boolean pinned, Long views, LocalDate deletedAt) {
+    public Post(Long communityId, Long authorId, String authorNickname, String imageUrl, String title, String content, Category category, boolean pinned, Long views, LocalDate deletedAt) {
         this.communityId = communityId;
         this.authorId = authorId;
         this.authorNickname = authorNickname;
-        this.thumbnailFileId = thumbnailFileId;
+        this.imageUrl = imageUrl;
         this.title = title;
         this.content = content;
         this.category = category;
@@ -52,8 +52,8 @@ public class Post extends BaseTimeEntity {
         this.authorNickname = authorNickname;
     }
 
-    public void updateThumbnailFileId(Long thumbnailFileId) {
-        this.thumbnailFileId = thumbnailFileId;
+    public void updateThumbnailFileId(String thumbnailFileId) {
+        this.imageUrl = imageUrl;
     }
 
     public void updateTitle(String title) {
