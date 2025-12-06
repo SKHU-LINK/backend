@@ -42,7 +42,6 @@ public class CommunityService {
                 true
         );
 
-
         return CommunityResponse.from(community);
     }
 
