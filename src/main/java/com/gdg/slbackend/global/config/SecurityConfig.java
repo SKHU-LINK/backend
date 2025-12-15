@@ -14,6 +14,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
@@ -39,18 +44,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                // ✅ CORS 활성화 (중요)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
                 .csrf(csrf -> csrf.disable())
-                // OAuth2 로그인 과정에서는 세션이 필요할 수 있어서 IF_REQUIRED 유지
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
-                        // ===== Swagger / OpenAPI (익명 허용) =====
+                        // ===== Swagger / OpenAPI =====
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
 
-                        // ===== Auth (익명 허용) =====
+                        // ===== Auth =====
                         .requestMatchers(
                                 "/auth/login",
                                 "/auth/refresh",
@@ -59,18 +66,17 @@ public class SecurityConfig {
                                 "/error"
                         ).permitAll()
 
-                        // ===== Memo (완전 익명) =====
+                        // ===== Memo =====
                         .requestMatchers(HttpMethod.GET, "/memos/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/memos/**").permitAll()
 
-                        // ===== 읽기 전용 공개 범위 =====
+                        // ===== 읽기 전용 공개 =====
                         .requestMatchers(HttpMethod.GET,
                                 "/communities/**",
                                 "/posts/**",
                                 "/resources/**"
                         ).permitAll()
 
-                        // 그 외는 전부 로그인 필요
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth
@@ -85,6 +91,32 @@ public class SecurityConfig {
         );
 
         return http.build();
+    }
+
+    /**
+     * ✅ CORS 설정 (운영 기준)
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowedOrigins(List.of(
+                "http://localhost:3000"
+                // 👉 여기에 운영 프론트 주소 추가
+                // "https://프론트도메인.com"
+        ));
+
+        config.setAllowedMethods(List.of(
+                "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
+        ));
+
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
     }
 
     @Bean

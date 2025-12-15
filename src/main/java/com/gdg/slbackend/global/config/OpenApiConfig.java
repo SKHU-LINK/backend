@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
         ),
         servers = {
                 @Server(url = "http://localhost:8080", description = "로컬 환경"),
-                @Server(url = "https://api.example.com", description = "배포 환경")
+                @Server(url = "http://shku-link.duckdns.org", description = "배포 환경")
         }
 )
 public class OpenApiConfig {
