@@ -47,7 +47,7 @@ spring:
               - openid
               - profile
               - email
-            redirect-uri: "{baseUrl}/auth/microsoft/callback"
+            redirect-uri: "https://skhu-link.duckdns.org/auth/microsoft/callback"
             authorization-grant-type: authorization_code
         provider:
           microsoft:
