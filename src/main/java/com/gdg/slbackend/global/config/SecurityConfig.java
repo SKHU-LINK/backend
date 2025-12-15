@@ -101,9 +101,9 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(List.of(
-                "http://localhost:3000"
-                // 👉 여기에 운영 프론트 주소 추가
-                // "https://프론트도메인.com"
+                "http://localhost:3000",
+                "http://shku-link.duckdns.org",
+                "https://shku-link.duckdns.org"
         ));
 
         config.setAllowedMethods(List.of(
