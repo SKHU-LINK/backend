@@ -6,6 +6,7 @@ import com.gdg.slbackend.global.security.JwtAuthenticationFilter;
 import com.gdg.slbackend.global.security.JwtTokenProvider;
 import com.gdg.slbackend.global.security.OAuth2LoginSuccessHandler;
 import com.gdg.slbackend.service.auth.AuthService;
+import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,8 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
@@ -44,9 +43,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // ✅ CORS 활성화 (중요)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
@@ -61,8 +58,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/auth/login",
                                 "/auth/refresh",
-                                "/auth/microsoft/callback",
                                 "/oauth2/**",
+                                "/login/oauth2/**",
                                 "/error"
                         ).permitAll()
 
@@ -81,7 +78,7 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth -> oauth
                         .authorizationEndpoint(ae -> ae.baseUri("/oauth2/authorization"))
-                        .redirectionEndpoint(re -> re.baseUri("/auth/microsoft/callback"))
+                        // redirectionEndpoint 는 기본값(/login/oauth2/code/{registrationId}) 사용
                         .successHandler(oAuth2LoginSuccessHandler())
                 );
 
@@ -93,9 +90,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * ✅ CORS 설정 (운영 기준)
-     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -105,11 +99,9 @@ public class SecurityConfig {
                 "http://skhu-link.duckdns.org",
                 "https://skhu-link.duckdns.org"
         ));
-
         config.setAllowedMethods(List.of(
                 "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
         ));
-
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
