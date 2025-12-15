@@ -102,8 +102,8 @@ public class SecurityConfig {
 
         config.setAllowedOrigins(List.of(
                 "http://localhost:3000",
-                "http://shku-link.duckdns.org",
-                "https://shku-link.duckdns.org"
+                "http://skhu-link.duckdns.org",
+                "https://skhu-link.duckdns.org"
         ));
 
         config.setAllowedMethods(List.of(
