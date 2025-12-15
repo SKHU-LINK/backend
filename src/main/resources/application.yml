@@ -73,7 +73,7 @@ spring:
   cors:
     allowed-origins:
       - http://localhost:3000
-      - https://your-frontend-domain.com
+      - https://skhu-link.duckdns.org
     allowed-methods: GET, POST, PUT, PATCH, DELETE, OPTIONS
     allowed-headers: "*"
     allow-credentials: true
