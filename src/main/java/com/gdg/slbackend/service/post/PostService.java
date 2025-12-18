@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -76,13 +77,13 @@ public class PostService {
 
         validatePostModifyPermission(post, userId);
 
+        String newImageUrl = null;
         MultipartFile file = postRequest.getMultipartFile();
         if (file != null && !file.isEmpty()) {
-            String imageUrl = s3Uploader.uploadFile(file, "posts");
-            post.updateImageUrl(imageUrl);
+            newImageUrl = s3Uploader.uploadFile(file, "posts");
         }
 
-        postUpdater.updatePost(postRequest, post);
+        postUpdater.updatePost(postRequest, post, newImageUrl);
 
         return PostResponse.from(post);
     }

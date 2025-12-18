@@ -43,5 +43,30 @@ public class S3Uploader {
             throw new GlobalException(ErrorCode.FILE_UPLOAD_FAILED);
         }
     }
-}
 
+    /**
+     * imageUrl 전체를 받아서 내부에서 key로 변환 후 삭제
+     */
+    public void deleteFile(String imageUrl) {
+        if (imageUrl == null || imageUrl.isBlank()) return;
+
+        try {
+            String key = extractKey(imageUrl);
+            amazonS3Client.deleteObject(bucket, key);
+        } catch (Exception e) {
+            throw new GlobalException(ErrorCode.FILE_DELETE_FAILED);
+        }
+    }
+
+    /**
+     * https://bucket.s3.region.amazonaws.com/posts/xxx.png
+     * → posts/xxx.png
+     */
+    private String extractKey(String imageUrl) {
+        int idx = imageUrl.indexOf(".com/");
+        if (idx == -1) {
+            throw new GlobalException(ErrorCode.INVALID_FILE_URL);
+        }
+        return imageUrl.substring(idx + 5);
+    }
+}
