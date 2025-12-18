@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@RestController //수정테스트
 @RequestMapping("/users")
 @Tag(name = "User", description = "사용자 조회 및 마일리지 관리 API")
 public class UserController {

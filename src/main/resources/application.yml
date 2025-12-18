@@ -1,3 +1,6 @@
+server:
+  forward-headers-strategy: framework
+
 spring:
   application:
     name: skhu-link
@@ -44,7 +47,7 @@ spring:
               - openid
               - profile
               - email
-            redirect-uri: "{baseUrl}/auth/microsoft/callback"
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             authorization-grant-type: authorization_code
         provider:
           microsoft:
@@ -52,6 +55,7 @@ spring:
             token-uri: https://login.microsoftonline.com/${MS_TENANT_ID}/oauth2/v2.0/token
             user-info-uri: https://graph.microsoft.com/oidc/userinfo
             user-name-attribute: sub
+            jwk-set-uri: https://login.microsoftonline.com/${MS_TENANT_ID}/discovery/v2.0/keys
 
   jwt:
     secret: ${JWT_SECRET}
@@ -73,12 +77,12 @@ spring:
   cors:
     allowed-origins:
       - http://localhost:3000
-      - https://your-frontend-domain.com
+      - https://skhu-link.duckdns.org
     allowed-methods: GET, POST, PUT, PATCH, DELETE, OPTIONS
     allowed-headers: "*"
     allow-credentials: true
 
-# logging:
-#   level:
-#     org.hibernate.SQL: debug
-#     org.springframework.security: debug
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
