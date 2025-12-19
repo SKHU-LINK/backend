@@ -8,4 +8,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByOauthSubject(String oauthSubject);
 
     Optional<User> findByEmail(String email);
+
+    Optional<User> findByOauthProviderAndOauthSubject(String oauthProvider, String oauthSubject);
+
+    boolean existsByIdAndRole(Long id, UserRole role);
 }

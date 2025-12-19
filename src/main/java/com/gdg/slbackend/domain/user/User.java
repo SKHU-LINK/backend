@@ -2,9 +2,18 @@ package com.gdg.slbackend.domain.user;
 
 import com.gdg.slbackend.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
+import static lombok.AccessLevel.PROTECTED;
+
+@Getter
 @Entity
 @Table(name = "users")
+@NoArgsConstructor(access = PROTECTED)
 public class User extends BaseTimeEntity {
 
     /**
@@ -36,14 +45,17 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private UserRole role;
 
+    @Column(nullable = false)
+    private int mileage;
+
+    @Column(nullable = false)
+    private boolean isBanned;
+
     @Column
-    private String lastLoginAt;
+    private LocalDateTime lastLoginAt;
 
-    protected User() {
-        // JPA 기본 생성자
-    }
-
-    public User(
+    @Builder
+    private User(
             String oauthProvider,
             String oauthSubject,
             String email,
@@ -57,45 +69,27 @@ public class User extends BaseTimeEntity {
         this.displayName = displayName;
         this.nickname = nickname;
         this.role = role;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getOauthProvider() {
-        return oauthProvider;
-    }
-
-    public String getOauthSubject() {
-        return oauthSubject;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    public String getLastLoginAt() {
-        return lastLoginAt;
+        this.mileage = 0;
+        this.isBanned = false;
     }
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
 
-    public void updateLastLoginAt(String time) {
+    public void increaseMileage(int amount) {
+        this.mileage += amount;
+    }
+
+    public void useMileage(int amount) {
+        this.mileage -= amount;
+    }
+
+    public void ban() {
+        this.isBanned = true;
+    }
+
+    public void updateLastLoginAt(LocalDateTime time) {
         this.lastLoginAt = time;
     }
 }
