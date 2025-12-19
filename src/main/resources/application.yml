@@ -62,18 +62,6 @@ spring:
     access-token-expiration: 3600000
     refresh-token-expiration: 1209600000
 
-  # cloud:
-  #   aws:
-  #     credentials:
-  #       access-key: ${AWS_ACCESS_KEY}
-  #       secret-key: ${AWS_SECRET_KEY}
-  #     s3:
-  #       bucket: ${AWS_S3_BUCKET}
-  #     region:
-  #       static: ap-northeast-2
-  #     stack:
-  #       auto: false
-
   cors:
     allowed-origins:
       - http://localhost:3000
@@ -86,3 +74,15 @@ logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.security.oauth2: DEBUG
+
+cloud:
+ aws:
+   credentials:
+     access-key: ${AWS_ACCESS_KEY}
+     secret-key: ${AWS_SECRET_KEY}
+   s3:
+     bucket: ${AWS_S3_BUCKET}
+   region:
+     static: ap-northeast-2
+   stack:
+     auto: false
