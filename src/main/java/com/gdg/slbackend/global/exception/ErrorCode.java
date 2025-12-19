@@ -32,7 +32,7 @@ public enum ErrorCode {
     /**
      * 게시물 관련 에러 코드
      * */
-    POST_NOT_FOUND("게시물이 존재하지 않습니다."),
+    POST_NOT_FOUND("해당 게시물이 존재하지 않습니다."),
     POST_INVALID_TITLE("해당 제목의 게시물이 존재하지 않습니다."),
     POST_INVALID_AUTHOR_NICKNAME("해당 닉네임의 게시물이 존재하지 않습니다."),
     POST_INVALID_CATEGORY("해당 카테고리의 게시물이 존재하지 않습니다."),
@@ -52,11 +52,12 @@ public enum ErrorCode {
      * */
     COMMENT_MODIFY_FORBIDDEN("해당 댓글을 수정 및 삭제할 수 있는 권한이 없습니다."),
     COMMENT_NOT_AUTHOR("해당 댓글의 작성자가 아닙니다."),
+    COMMENT_NOT_FOUND("해당 댓글이 존재하지 않습니다."),
 
     /**
      * 자료실 관련 에러 코드
      * */
-    RESOURCE_NOT_FOUND("파일이 존재하지 않습니다."),
+    RESOURCE_NOT_FOUND("해당 파일이 존재하지 않습니다."),
     RESOURCE_MODIFY_FORBIDDEN("해당 파일을 수정 및 삭제할 수 있는 권한 이 없습니다.");
 
 

@@ -2,6 +2,7 @@ package com.gdg.slbackend.api.file;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/upload")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class FileUploadController {
     private final AmazonS3Client amazonS3Client;
 

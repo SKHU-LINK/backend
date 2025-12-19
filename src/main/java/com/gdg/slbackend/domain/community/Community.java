@@ -2,6 +2,7 @@ package com.gdg.slbackend.domain.community;
 
 import com.gdg.slbackend.domain.user.User;
 import com.gdg.slbackend.global.entity.BaseTimeEntity;
+import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+@Entity
 @Getter
 @Table(name = "communities")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

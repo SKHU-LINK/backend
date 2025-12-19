@@ -1,13 +1,30 @@
 package com.gdg.slbackend.global.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * 웹 레이어의 전역 설정을 담당하는 구성 클래스임.
- * CORS 설정, 인터셉터, ArgumentResolver 등을 필요할 때 추가하도록 함.
- */
+import java.util.List;
 
 @Configuration
-public class WebConfig {
-    // Interceptor, CORS 설정은 이후 필요 시 추가
+public class WebConfig implements WebMvcConfigurer {
+
+    /**
+     * 인터셉터 등록
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        // registry.addInterceptor(new LoggingInterceptor())
+        //         .addPathPatterns("/**")
+        //         .excludePathPatterns("/swagger-ui/**");
+    }
+
+    /**
+     * ArgumentResolver 등록
+     */
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        // resolvers.add(new CurrentUserArgumentResolver());
+    }
 }

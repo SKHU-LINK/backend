@@ -4,6 +4,7 @@ import com.gdg.slbackend.api.resource.dto.ResourceRequest;
 import com.gdg.slbackend.api.resource.dto.ResourceResponse;
 import com.gdg.slbackend.global.security.UserPrincipal;
 import com.gdg.slbackend.service.resource.ResourceService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/communities")
+@SecurityRequirement(name = "bearerAuth")
 public class ResourceController {
 
     private final ResourceService resourceService;
