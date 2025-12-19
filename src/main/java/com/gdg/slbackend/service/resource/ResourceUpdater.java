@@ -2,6 +2,7 @@ package com.gdg.slbackend.service.resource;
 
 import com.gdg.slbackend.domain.resource.Resource;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

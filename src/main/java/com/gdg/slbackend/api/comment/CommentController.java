@@ -4,6 +4,7 @@ import com.gdg.slbackend.api.comment.dto.CommentRequest;
 import com.gdg.slbackend.api.comment.dto.CommentResponse;
 import com.gdg.slbackend.global.security.UserPrincipal;
 import com.gdg.slbackend.service.comment.CommentService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping
 @Tag(name = "Comment")
+@SecurityRequirement(name = "bearerAuth")
 public class CommentController {
 
     private final CommentService commentService;

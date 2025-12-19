@@ -5,6 +5,7 @@ import com.gdg.slbackend.api.post.dto.PostResponse;
 import com.gdg.slbackend.global.security.UserPrincipal;
 import com.gdg.slbackend.service.post.PostService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/communities/{communityId}/posts")
 @Tag(name = "Post", description = "Community posts")
+@SecurityRequirement(name = "bearerAuth")
 public class PostController {
     private final PostService postService;
 
