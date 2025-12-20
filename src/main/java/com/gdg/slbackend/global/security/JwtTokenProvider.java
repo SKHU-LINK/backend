@@ -3,7 +3,6 @@ package com.gdg.slbackend.global.security;
 import com.gdg.slbackend.domain.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,11 +10,15 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 /**
  * JWT 생성 및 검증을 담당함.
+ *
+ * application.yml 기준:
+ * spring.jwt.secret: ${JWT_SECRET}
+ * spring.jwt.access-token-expiration: (ms)
+ * spring.jwt.refresh-token-expiration: (ms)
  */
 @Component
 public class JwtTokenProvider {
@@ -23,45 +26,46 @@ public class JwtTokenProvider {
     private static final String CLAIM_TOKEN_TYPE = "type";
     private static final String TOKEN_TYPE_ACCESS = "ACCESS";
     private static final String TOKEN_TYPE_REFRESH = "REFRESH";
+    private static final String CLAIM_ROLE = "role";
 
     private final SecretKey secretKey;
-    private final long accessTokenValidity;
-    private final long refreshTokenValidity;
+    private final long accessTokenExpirationMs;
+    private final long refreshTokenExpirationMs;
 
     public JwtTokenProvider(
-            @Value("${security.jwt.secret:ZmFrZS1zZWNyZXQtZm9yLXRlc3QtMTIzNDU2Nzg5MGFiY2RlZg==}") String secret,
-            @Value("${security.jwt.access-expiration-minutes:60}") long accessTokenValidity,
-            @Value("${security.jwt.refresh-expiration-days:14}") long refreshTokenValidity
+            @Value("${spring.jwt.secret}") String secret,
+            @Value("${spring.jwt.access-token-expiration:3600000}") long accessTokenExpirationMs,
+            @Value("${spring.jwt.refresh-token-expiration:1209600000}") long refreshTokenExpirationMs
     ) {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
-        this.accessTokenValidity = accessTokenValidity;
-        this.refreshTokenValidity = refreshTokenValidity;
+        this.accessTokenExpirationMs = accessTokenExpirationMs;
+        this.refreshTokenExpirationMs = refreshTokenExpirationMs;
     }
 
     public String createAccessToken(User user) {
         Instant now = Instant.now();
-        Instant expiry = now.plus(accessTokenValidity, ChronoUnit.MINUTES);
+        Instant expiry = now.plusMillis(accessTokenExpirationMs);
 
         return Jwts.builder()
                 .setSubject(String.valueOf(user.getId()))
-                .claim("role", user.getRole().name())
+                .claim(CLAIM_ROLE, user.getRole().name())
                 .claim(CLAIM_TOKEN_TYPE, TOKEN_TYPE_ACCESS)
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(expiry))
-                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .signWith(secretKey)
                 .compact();
     }
 
     public String createRefreshToken(User user) {
         Instant now = Instant.now();
-        Instant expiry = now.plus(refreshTokenValidity, ChronoUnit.DAYS);
+        Instant expiry = now.plusMillis(refreshTokenExpirationMs);
 
         return Jwts.builder()
                 .setSubject(String.valueOf(user.getId()))
                 .claim(CLAIM_TOKEN_TYPE, TOKEN_TYPE_REFRESH)
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(expiry))
-                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .signWith(secretKey)
                 .compact();
     }
 
