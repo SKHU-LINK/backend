@@ -21,9 +21,9 @@ public class CommunityCreator {
             throw new GlobalException(ErrorCode.COMMUNITY_INVALID_YEAR);
         }
 
-        if (communityRequest.getSemester() != 1 || communityRequest.getSemester() != 2){
+        /*if (communityRequest.getSemester() != 1 || communityRequest.getSemester() != 2){
             throw new GlobalException(ErrorCode.COMMUNITY_INVALID_SEMESTER);
-        }
+        }*/
 
         if (!userRepository.existsById(admin.getId())) {
             throw new GlobalException(ErrorCode.USER_NOT_FOUND);

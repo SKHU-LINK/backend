@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,10 +35,9 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Create post")
     public ResponseEntity<PostResponse> createPost(
             @PathVariable Long communityId,
-            @RequestPart("post") @Valid PostRequest postRequest,
+            @ModelAttribute @Valid PostRequest postRequest,
             @AuthenticationPrincipal UserPrincipal principal
     ) {
         postRequest.setCommunityId(communityId);

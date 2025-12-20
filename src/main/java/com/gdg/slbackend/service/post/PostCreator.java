@@ -14,7 +14,7 @@ public class PostCreator {
     final private UserFinder userFinder;
 
     public Post createPost(PostRequest postRequest, Long authorId, String imageUrl) {
-        return Post.builder()
+        Post post = Post.builder()
                 .category(postRequest.getCategory())
                 .title(postRequest.getTitle())
                 .content(postRequest.getContent())
@@ -25,5 +25,7 @@ public class PostCreator {
                 .authorNickname(userFinder.findUserNameByIdOrThrow(authorId))
                 .imageUrl(imageUrl)
                 .build();
+
+        return postRepository.save(post);
     }
 }

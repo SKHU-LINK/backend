@@ -19,6 +19,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
@@ -41,20 +42,21 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(org.springframework.security.config.annotation.web.builders.HttpSecurity http) throws Exception {
         http
+                // CORS 활성화
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
-                        // ===== Swagger / OpenAPI =====
+                        // Swagger / OpenAPI 허용
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
 
-                        // ===== Auth =====
+                        // 인증 관련 허용
                         .requestMatchers(
                                 "/auth/login",
                                 "/auth/refresh",
@@ -63,45 +65,38 @@ public class SecurityConfig {
                                 "/error"
                         ).permitAll()
 
-                        // ===== Memo =====
-                        .requestMatchers(HttpMethod.GET, "/memos/**").permitAll()
+                        // 공개 API
+                        .requestMatchers(HttpMethod.GET, "/memos/**", "/communities/**", "/posts/**", "/resources/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/memos/**").permitAll()
 
-                        // ===== 읽기 전용 공개 =====
-                        .requestMatchers(HttpMethod.GET,
-                                "/communities/**",
-                                "/posts/**",
-                                "/resources/**"
-                        ).permitAll()
-
+                        // 그 외 요청은 인증 필요
                         .anyRequest().authenticated()
                 )
+                // OAuth2 로그인 설정
                 .oauth2Login(oauth -> oauth
                         .authorizationEndpoint(ae -> ae.baseUri("/oauth2/authorization"))
-                        // redirectionEndpoint 는 기본값(/login/oauth2/code/{registrationId}) 사용
                         .successHandler(oAuth2LoginSuccessHandler())
                 );
 
-        http.addFilterBefore(
-                jwtAuthenticationFilter(),
-                UsernamePasswordAuthenticationFilter.class
-        );
+        // JWT 필터 추가
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
+    /**
+     * CORS 설정
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(List.of(
-                "http://localhost:3000",
-                "http://skhu-link.duckdns.org",
-                "https://skhu-link.duckdns.org"
+                "http://localhost:3000",       // 프론트엔드
+                "http://localhost:8080",       // Swagger UI
+                "https://skhu-link.duckdns.org" // 배포 서버
         ));
-        config.setAllowedMethods(List.of(
-                "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
-        ));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 

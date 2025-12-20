@@ -5,6 +5,7 @@ import com.gdg.slbackend.api.resource.dto.ResourceResponse;
 import com.gdg.slbackend.domain.resource.Resource;
 import com.gdg.slbackend.global.exception.ErrorCode;
 import com.gdg.slbackend.global.exception.GlobalException;
+import com.gdg.slbackend.global.util.S3Uploader;
 import com.gdg.slbackend.service.communityMembership.CommunityMembershipFinder;
 import com.gdg.slbackend.service.user.UserFinder;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,8 @@ public class ResourceService {
     private final ResourceCreator resourceCreator;
     private final ResourceUpdater resourceUpdater;
     private final ResourceDeleter resourceDeleter;
+
+    private final S3Uploader s3Uploader;
 
     private final CommunityMembershipFinder communityMembershipFinder;
     private final UserFinder userFinder;
@@ -45,13 +48,19 @@ public class ResourceService {
     public ResourceResponse createResource(
             Long communityId,
             Long userId,
-            ResourceRequest request
+            ResourceRequest resourceRequest
     ) {
+        String imageUrl = null;
+
+        if (resourceRequest.getMultipartFile() != null && !resourceRequest.getMultipartFile().isEmpty()) {
+            imageUrl = s3Uploader.uploadFile(resourceRequest.getMultipartFile(), "resources");
+        }
+
         Resource resource = resourceCreator.create(
                 communityId,
                 userId,
-                request.getTitle(),
-                request.getFileId()
+                resourceRequest.getTitle(),
+                imageUrl
         );
 
         return ResourceResponse.from(resource);

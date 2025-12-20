@@ -17,13 +17,13 @@ public class ResourceCreator {
             Long communityId,
             Long uploaderId,
             String title,
-            String fileId
+            String imageUrl
     ) {
         Resource resource = Resource.builder()
                 .communityId(communityId)
                 .uploaderId(uploaderId)
                 .title(title)
-                .fileId(fileId)
+                .imageUrl(imageUrl)
                 .build();
 
         return resourceRepository.save(resource);

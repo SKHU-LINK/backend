@@ -29,14 +29,14 @@ public class Resource extends BaseTimeEntity {
     /**
      * S3 object key (ex: resources/uuid_filename.pdf)
      */
-    private String fileId;
+    private String imageUrl;
 
     @Builder
-    public Resource(Long communityId, Long uploaderId, String title, String fileId) {
+    public Resource(Long communityId, Long uploaderId, String title, String imageUrl) {
         this.communityId = communityId;
         this.uploaderId = uploaderId;
         this.title = title;
-        this.fileId = fileId;
+        this.imageUrl = imageUrl;
     }
 
     public void updateTitle(String title) {

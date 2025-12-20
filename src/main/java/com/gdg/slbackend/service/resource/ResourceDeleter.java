@@ -17,7 +17,7 @@ public class ResourceDeleter {
     @Transactional
     public void delete(Resource resource) {
         // S3 실제 파일 삭제
-        s3Uploader.deleteFile(resource.getFileId());
+        s3Uploader.deleteFile(resource.getImageUrl());
 
         // DB 삭제
         resourceRepository.delete(resource);

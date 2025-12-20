@@ -17,7 +17,7 @@ public class ResourceResponse {
         return ResourceResponse.builder()
                 .id(resource.getId())
                 .title(resource.getTitle())
-                .fileId(resource.getFileId())
+                .fileId(resource.getImageUrl())
                 .uploaderId(resource.getUploaderId())
                 .build();
     }
