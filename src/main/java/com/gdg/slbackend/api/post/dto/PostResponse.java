@@ -1,6 +1,7 @@
 package com.gdg.slbackend.api.post.dto;
 
 import com.gdg.slbackend.domain.post.Post;
+import com.gdg.slbackend.global.enums.Category;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,6 +15,7 @@ public class PostResponse {
     private String content;
     private String imageUrl;
     private Long views;
+    private Category category;
     private boolean pinned;
 
     private LocalDateTime createdAt;
@@ -36,6 +38,7 @@ public class PostResponse {
                 .communityId(post.getCommunityId())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
+                .category(post.getCategory())
                 .build();
     }
 }
