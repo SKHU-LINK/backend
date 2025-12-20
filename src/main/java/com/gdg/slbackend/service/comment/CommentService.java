@@ -2,7 +2,9 @@ package com.gdg.slbackend.service.comment;
 
 import com.gdg.slbackend.api.comment.dto.CommentRequest;
 import com.gdg.slbackend.api.comment.dto.CommentResponse;
+import com.gdg.slbackend.api.post.dto.PostResponse;
 import com.gdg.slbackend.domain.comment.Comment;
+import com.gdg.slbackend.domain.post.Post;
 import com.gdg.slbackend.global.exception.ErrorCode;
 import com.gdg.slbackend.global.exception.GlobalException;
 import com.gdg.slbackend.service.communityMembership.CommunityMembershipFinder;
@@ -49,6 +51,14 @@ public class CommentService {
         validateCommentModifyPermission(comment, userId);
 
         commentUpdater.update(comment, request.getContent());
+        return CommentResponse.from(comment);
+    }
+
+    public CommentResponse updateLikes(Long commentId) {
+        Comment comment = commentFinder.findByIdOrThrow(commentId);
+
+        commentUpdater.updateLikes(comment);
+
         return CommentResponse.from(comment);
     }
 

@@ -2,8 +2,10 @@ package com.gdg.slbackend.api.comment;
 
 import com.gdg.slbackend.api.comment.dto.CommentRequest;
 import com.gdg.slbackend.api.comment.dto.CommentResponse;
+import com.gdg.slbackend.api.post.dto.PostResponse;
 import com.gdg.slbackend.global.security.UserPrincipal;
 import com.gdg.slbackend.service.comment.CommentService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -59,6 +61,16 @@ public class CommentController {
     ) {
         return ResponseEntity.ok(
                 commentService.updateComment(commentId, principal.getId(), request)
+        );
+    }
+
+    @PatchMapping("/comments/{commentId}/like")
+    @Operation(summary = "Update comment likes")
+    public ResponseEntity<CommentResponse> updateLikes(
+            @PathVariable Long commentId
+    ) {
+        return ResponseEntity.ok(
+                commentService.updateLikes(commentId)
         );
     }
 

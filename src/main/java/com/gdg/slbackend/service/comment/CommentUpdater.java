@@ -11,4 +11,8 @@ public class CommentUpdater {
         comment.updateContent(content);
         comment.updateUpdatedAt(LocalDateTime.now());
     }
+
+    public void updateLikes(Comment comment) {
+        comment.increaseLikes();
+    }
 }

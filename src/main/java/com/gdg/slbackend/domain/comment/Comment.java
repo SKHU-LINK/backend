@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "comments")
-public class Comment extends BaseTimeEntity {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +32,8 @@ public class Comment extends BaseTimeEntity {
 
     @Column(nullable = false)
     private Long authorId;
+
+    private Long likes;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -51,5 +53,9 @@ public class Comment extends BaseTimeEntity {
 
     public void updateUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public void increaseLikes() {
+        ++likes;
     }
 }
