@@ -59,8 +59,8 @@ spring:
 
   jwt:
     secret: ${JWT_SECRET}
-    access-token-expiration: 3600000
-    refresh-token-expiration: 1209600000
+    access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:3600000}
+    refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:1209600000}
 
   cors:
     allowed-origins:
