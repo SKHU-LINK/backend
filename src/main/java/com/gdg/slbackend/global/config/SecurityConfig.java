@@ -66,7 +66,8 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // 공개 API
-                        .requestMatchers(HttpMethod.GET, "/memos/**", "/communities/**", "/posts/**", "/resources/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/memos/**").permitAll()
+//                        "/communities/**", "/posts/**", "/resources/**"
                         .requestMatchers(HttpMethod.POST, "/memos/**").permitAll()
 
                         // 그 외 요청은 인증 필요
