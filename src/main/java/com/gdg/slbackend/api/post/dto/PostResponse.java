@@ -15,6 +15,7 @@ public class PostResponse {
     private String content;
     private String imageUrl;
     private Long views;
+    private long likes;
     private Category category;
     private boolean pinned;
 
@@ -33,6 +34,7 @@ public class PostResponse {
                 .content(post.getContent())
                 .imageUrl(post.getImageUrl())
                 .views(post.getViews())
+                .likes(post.getLikes())
                 .pinned(post.isPinned())
                 .authorId(post.getAuthorId())
                 .authorNickname(post.getAuthorNickname())
