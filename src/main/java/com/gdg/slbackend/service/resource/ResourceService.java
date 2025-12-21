@@ -70,6 +70,8 @@ public class ResourceService {
                 imageUrl
         );
 
+        mileageService.change(userId, MileageType.RESOURCE_UPLOAD_REWARD);
+
         return ResourceResponse.from(resource);
     }
 
@@ -105,7 +107,7 @@ public class ResourceService {
 
         // 3. 마일리지 처리
         mileageService.change(downloaderId, MileageType.RESOURCE_DOWNLOAD);
-        mileageService.change(resource.getUploaderId(), MileageType.RESOURCE_UPLOAD_REWARD);
+        mileageService.change(resource.getUploaderId(), MileageType.RESOURCE_DOWNLOAD_UPLOADER_REWARD);
 
         // 4. 실제 다운로드 정보 반환
         return ResourceDownloadResponse.from(resource);

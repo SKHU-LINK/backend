@@ -23,9 +23,10 @@ public class PostResponse {
 
     private Long authorId;
     private String authorNickname;
+    private long comments;
     private Long communityId;
 
-    public static PostResponse from(Post post) {
+    public static PostResponse from(Post post, long comments) {
         return PostResponse.builder()
                 .id(post.getId())
                 .title(post.getTitle())
@@ -39,6 +40,11 @@ public class PostResponse {
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .category(post.getCategory())
+                .comments(comments)
                 .build();
+    }
+
+    public static PostResponse from(Post post) {
+        return from(post, 0);
     }
 }

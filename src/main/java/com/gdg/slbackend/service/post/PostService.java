@@ -6,6 +6,7 @@ import com.gdg.slbackend.domain.post.Post;
 import com.gdg.slbackend.global.exception.ErrorCode;
 import com.gdg.slbackend.global.exception.GlobalException;
 import com.gdg.slbackend.global.util.S3Uploader;
+import com.gdg.slbackend.service.comment.CommentFinder;
 import com.gdg.slbackend.service.communityMembership.CommunityMembershipFinder;
 import com.gdg.slbackend.service.user.UserFinder;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class PostService {
     final private PostDeleter postDeleter;
 
     final private UserFinder userFinder;
+    final private CommentFinder commentFinder;
 
     final private CommunityMembershipFinder communityMembershipFinder;
 
@@ -43,7 +45,11 @@ public class PostService {
 
     public Optional<PostResponse> getPinnedPost(Long communityId) {
         return postFinder.findPinnedPost(communityId)
-                .map(PostResponse::from);
+                .map(post -> {
+                    long commentCount =
+                            commentFinder.countByPostId(post.getId());
+                    return PostResponse.from(post, commentCount);
+                });
     }
 
     public PostResponse getPost(Long communityId, Long postId) {
@@ -51,13 +57,17 @@ public class PostService {
 
         postUpdater.updateViews(post);
 
-        return PostResponse.from(post);
+        return PostResponse.from(post, commentFinder.countByPostId(postId));
     }
 
     public List<PostResponse> getAllPosts(Long communityId, Long lastId) {
         return postFinder.findAllPost(communityId, lastId)
                 .stream()
-                .map(PostResponse::from)
+                .map(post -> {
+                    long commentCount =
+                            commentFinder.countByPostId(post.getId());
+                    return PostResponse.from(post, commentCount);
+                })
                 .toList();
     }
 
@@ -68,7 +78,7 @@ public class PostService {
 
         postUpdater.updatePinned(post);
 
-        return PostResponse.from(post);
+        return PostResponse.from(post, commentFinder.countByPostId(post.getId()));
     }
 
     public PostResponse updatePost(PostRequest postRequest, Long postId, Long userId) {
@@ -84,7 +94,7 @@ public class PostService {
 
         postUpdater.updatePost(postRequest, post, newImageUrl);
 
-        return PostResponse.from(post);
+        return PostResponse.from(post, commentFinder.countByPostId(post.getId()));
     }
 
     public PostResponse updateLikes(Long postId) {
@@ -92,7 +102,7 @@ public class PostService {
 
         postUpdater.updateLikes(post);
 
-        return PostResponse.from(post);
+        return PostResponse.from(post, commentFinder.countByPostId(post.getId()));
     }
 
     public void deletePost(Long postId, Long userId) {

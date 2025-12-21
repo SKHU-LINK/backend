@@ -109,7 +109,7 @@ public class SecurityConfig {
 
     @Bean
     public OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler() {
-        return new OAuth2LoginSuccessHandler(authService, objectMapper);
+        return new OAuth2LoginSuccessHandler(authService);
     }
 
     @Bean
