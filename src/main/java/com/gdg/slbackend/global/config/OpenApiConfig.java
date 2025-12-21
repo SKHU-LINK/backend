@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
                         email = "support@example.com")
         ),
         servers = {
-                @Server(url = "https://localhost:8080", description = "로컬 환경"),
+                @Server(url = "http://localhost:8080", description = "로컬 환경"),
                 @Server(url = "https://skhu-link.duckdns.org", description = "배포 환경")
         }
 )
