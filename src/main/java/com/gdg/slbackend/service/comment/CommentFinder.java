@@ -25,4 +25,8 @@ public class CommentFinder {
     public List<Comment> findByPostId(Long postId) {
         return commentRepository.findByPostIdOrderByIdAsc(postId);
     }
+
+    public long countByPostId(Long postId) {
+        return commentRepository.countByPostId(postId);
+    }
 }
