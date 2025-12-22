@@ -42,13 +42,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = resolveToken(request);
 
-        if (token == null) {
-            filterChain.doFilter(request, response);
+        if (!StringUtils.hasText(token)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT is required");
             return;
         }
 
         try {
             Claims claims = jwtTokenProvider.parseClaims(token);
+
             UserDetails userDetails =
                     userDetailsService.loadUserByUsername(claims.getSubject());
 
