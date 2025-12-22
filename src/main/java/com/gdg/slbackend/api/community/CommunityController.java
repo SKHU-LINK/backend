@@ -3,8 +3,6 @@ package com.gdg.slbackend.api.community;
 import com.gdg.slbackend.api.community.dto.CommunityRequest;
 import com.gdg.slbackend.api.community.dto.CommunityResponse;
 import com.gdg.slbackend.api.community.dto.CommunityUpdateAdminRequest;
-import com.gdg.slbackend.global.exception.ErrorCode;
-import com.gdg.slbackend.global.exception.GlobalException;
 import com.gdg.slbackend.global.response.ApiResponse;
 import com.gdg.slbackend.global.security.UserPrincipal;
 import com.gdg.slbackend.service.community.CommunityService;
