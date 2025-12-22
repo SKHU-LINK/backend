@@ -1,6 +1,7 @@
 package com.gdg.slbackend.service.community;
 
 import com.gdg.slbackend.api.community.dto.CommunityMembershipRequest;
+import com.gdg.slbackend.api.community.dto.CommunityMembershipResponse;
 import com.gdg.slbackend.api.community.dto.CommunityRequest;
 import com.gdg.slbackend.api.community.dto.CommunityResponse;
 import com.gdg.slbackend.domain.community.Community;
@@ -52,9 +53,14 @@ public class CommunityService {
     public CommunityResponse getCommunity(Long communityId, Long userId) {
         Community community = communityFinder.findByIdOrThrow(communityId);
 
-        Optional<CommunityMembership> communityMembership = communityMembershipFinder.findById(communityId, userId);
+        Optional<CommunityMembership> communityMembershipOpt = communityMembershipFinder.findById(communityId, userId);
 
-        return CommunityResponse.from(community, communityMembership.orElse(null));
+        CommunityMembershipResponse membershipResponse = communityMembershipOpt.map(communityMembership -> {
+            User user = communityMembership.getUser();
+            return CommunityMembershipResponse.from(communityMembership, user, community);
+        }).orElse(null);
+
+        return CommunityResponse.from(community, membershipResponse);
     }
 
     @Transactional(readOnly = true)
@@ -70,13 +76,28 @@ public class CommunityService {
                 ));
 
         return communities.stream()
-                .sorted((c1, c2) -> Boolean.compare(
-                        membershipMap.getOrDefault(c2.getId(), null) != null && membershipMap.get(c2.getId()).isPinned(),
-                        membershipMap.getOrDefault(c1.getId(), null) != null && membershipMap.get(c1.getId()).isPinned()
-                ))
-                .map(c -> CommunityResponse.from(c, membershipMap.getOrDefault(c.getId(), null)))
+                .sorted((c1, c2) -> {
+                    boolean pinned1 = membershipMap.get(c1.getId()) != null && membershipMap.get(c1.getId()).isPinned();
+                    boolean pinned2 = membershipMap.get(c2.getId()) != null && membershipMap.get(c2.getId()).isPinned();
+                    return Boolean.compare(pinned2, pinned1); // pinned true가 위로
+                })
+                .map(c -> {
+                    CommunityMembership membership = membershipMap.get(c.getId());
+                    CommunityMembershipResponse membershipResponse = null;
+
+                    if (membership != null) {
+                        membershipResponse = CommunityMembershipResponse.from(
+                                membership,
+                                membership.getUser(),
+                                c
+                        );
+                    }
+
+                    return CommunityResponse.from(c, membershipResponse);
+                })
                 .toList();
     }
+
 
 
     @Transactional
@@ -97,22 +118,30 @@ public class CommunityService {
     public CommunityResponse updateCommunityPinned(Long communityId, Long userId) {
         Community community = communityFinder.findByIdOrThrow(communityId);
 
-        Optional<CommunityMembership> communityMembership = communityMembershipFinder.findById(communityId, userId);
+        Optional<CommunityMembership> communityMembershipOpt = communityMembershipFinder.findById(communityId, userId);
 
-        if (communityMembership.isEmpty()) {
-            CommunityMembership newMembership = communityMembershipCreator.createCommunityMembershipByCommunityId(
-                    communityId,
-                    userId,
-                    Role.MEMBER,
-                    true
-            );
-            communityMembership = Optional.of(newMembership);
-        } else {
-            communityMembershipUpdater.updatePinned(communityMembership.get());
+        CommunityMembership membership = communityMembershipOpt.orElseGet(() ->
+                communityMembershipCreator.createCommunityMembershipByCommunityId(
+                        communityId,
+                        userId,
+                        Role.MEMBER,
+                        true
+                )
+        );
+
+        if (communityMembershipOpt.isPresent()) {
+            communityMembershipUpdater.updatePinned(membership);
         }
 
-        return CommunityResponse.from(community, communityMembership.orElse(null));
+        CommunityMembershipResponse membershipResponse = CommunityMembershipResponse.from(
+                membership,
+                membership.getUser(),
+                community
+        );
+
+        return CommunityResponse.from(community, membershipResponse);
     }
+
 
     public void deleteCommunity(Long communityId, Long userId) {
         if (communityMembershipFinder.isAdmin(userId, communityId)) {
