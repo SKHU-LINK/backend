@@ -107,4 +107,11 @@ public class CommunityController {
         communityService.deleteCommunity(communityId, principal);
         return ApiResponse.success();
     }
+
+    @GetMapping("/test")
+    public ResponseEntity<String> test(@AuthenticationPrincipal UserPrincipal principal) {
+        return ResponseEntity.ok(
+                principal == null ? "principal is null" : "principal id = " + principal.getId()
+        );
+    }
 }
