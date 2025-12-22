@@ -50,17 +50,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             Claims claims = jwtTokenProvider.parseClaims(token);
 
-            UserDetails userDetails =
-                    userDetailsService.loadUserByUsername(claims.getSubject());
+            // 🔴 핵심 수정: UserPrincipal로 받기
+            UserPrincipal userPrincipal =
+                    (UserPrincipal) userDetailsService.loadUserByUsername(claims.getSubject());
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
-                            userDetails,
+                            userPrincipal,                     // ✅ UserPrincipal
                             null,
-                            userDetails.getAuthorities()
+                            userPrincipal.getAuthorities()
                     );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT");
