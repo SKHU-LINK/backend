@@ -7,6 +7,9 @@ import com.gdg.slbackend.global.security.JwtTokenProvider;
 import com.gdg.slbackend.global.security.OAuth2LoginSuccessHandler;
 import com.gdg.slbackend.service.auth.AuthService;
 import java.util.List;
+
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -18,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.util.UriComponentsBuilder;
 
 
 @Configuration
@@ -28,6 +32,9 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final AuthService authService;
     private final ObjectMapper objectMapper;
+
+    @Value("${app.frontend.callback-url}")
+    private String frontDomain;
 
     public SecurityConfig(
             JwtTokenProvider jwtTokenProvider,
@@ -77,6 +84,25 @@ public class SecurityConfig {
                 .oauth2Login(oauth -> oauth
                         .authorizationEndpoint(ae -> ae.baseUri("/oauth2/authorization"))
                         .successHandler(oAuth2LoginSuccessHandler())
+                )
+
+                // 로그아웃 시 리다이렉트
+                .logout(logout -> logout
+                        .logoutUrl("/auth/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+
+                            // 프론트로 리다이렉트
+                            String redirectUrl = UriComponentsBuilder
+                                    .fromUriString(frontDomain + "/auth/callback")
+                                    .fragment("logout=true")
+                                    .build()
+                                    .toUriString();
+
+                            response.setStatus(HttpServletResponse.SC_FOUND);
+                            response.sendRedirect(redirectUrl);
+                        })
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
                 );
 
         // JWT 필터 추가
