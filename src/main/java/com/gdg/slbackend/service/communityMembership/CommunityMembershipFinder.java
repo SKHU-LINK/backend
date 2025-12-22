@@ -24,10 +24,12 @@ public class CommunityMembershipFinder {
                 .orElseThrow(() -> new GlobalException(ErrorCode.INTERNAL_SERVER_ERROR));
     }
 
-    @Transactional
-    public Optional<CommunityMembership> findById(Long communityId, Long userId) {
-        return communityMembershipRepository
-                .findByCommunityIdAndUserId(communityId, userId);
+    @Transactional(readOnly = true)
+    public Optional<CommunityMembership> findById(
+            Long communityId,
+            Long userId
+    ) {
+        return repository.findByCommunityIdAndUserId(communityId, userId);
     }
 
     @Transactional(readOnly = true)
@@ -54,14 +56,16 @@ public class CommunityMembershipFinder {
 
     @Transactional(readOnly = true)
     public List<CommunityMembership> findAllByUserId(Long userId) {
-        return communityMembershipRepository.findAllByUserId(userId);
+        return repository.findAllByUserId(userId);
     }
 
 
     @Transactional(readOnly = true)
     public boolean isAdmin(Long communityId, Long userId) {
-        return communityMembershipRepository.existsByCommunityIdAndUserIdAndRole(
-                communityId, userId, Role.ADMIN
+        return repository.existsByCommunityIdAndUserIdAndRole(
+                communityId,
+                userId,
+                Role.ADMIN
         );
     }
 }
