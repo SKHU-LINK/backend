@@ -40,39 +40,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // ⭐ 이미 인증되어 있으면 다시 안 함
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+        String token = resolveToken(request);
 
-            String token = resolveToken(request);
-            log.debug("JWT token = {}", token != null ? "EXISTS" : "NULL");
+        if (token == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-            if (token != null) {
-                try {
-                    Claims claims = jwtTokenProvider.parseClaims(token);
-                    log.debug("JWT subject = {}", claims.getSubject());
+        try {
+            Claims claims = jwtTokenProvider.parseClaims(token);
+            UserDetails userDetails =
+                    userDetailsService.loadUserByUsername(claims.getSubject());
 
-                    UserDetails userDetails =
-                            userDetailsService.loadUserByUsername(claims.getSubject());
-
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    userDetails,
-                                    null,
-                                    userDetails.getAuthorities()
-                            );
-
-                    authentication.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
                     );
 
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    log.debug("SecurityContext authentication set");
-
-                } catch (Exception e) {
-                    log.error("JWT authentication failed", e);
-                    SecurityContextHolder.clearContext();
-                }
-            }
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (Exception e) {
+            SecurityContextHolder.clearContext();
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT");
+            return;
         }
 
         filterChain.doFilter(request, response);
