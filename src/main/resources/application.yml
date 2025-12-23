@@ -91,6 +91,6 @@ cloud:
 
 app:
   frontend:
-    local-callback-url: http://localhost:3000/auth/callback
-    prod-callback-url: https://skhu-link.vercel.app/auth/callback
+    local-callback-url: ${FRONT_CALLBACK_URL_LOCAL}
+    prod-callback-url: ${FRONT_CALLBACK_URL_PROD}
 
