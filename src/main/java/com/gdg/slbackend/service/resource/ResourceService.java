@@ -128,7 +128,6 @@ public class ResourceService {
         ResourceDownloadResponse resourceDownloadResponse = ResourceDownloadResponse.builder()
                 .resourceId(resource.getId())
                 .downloadUrl(downloadUrl)
-
                 .build();
 
         log.info("After build response");
