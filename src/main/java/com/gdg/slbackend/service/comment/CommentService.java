@@ -40,7 +40,8 @@ public class CommentService {
 
     /* 댓글 작성 */
     public CommentResponse createComment(Long postId, Long userId, CommentRequest request) {
-        Comment comment = commentCreator.create(postId, userId, request.getContent());
+
+        Comment comment = commentCreator.create(postId, userId, userFinder.findUserNameByIdOrThrow(userId), request.getContent());
         return CommentResponse.from(comment);
     }
 

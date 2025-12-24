@@ -13,6 +13,7 @@ public class CommentResponse {
     private String content;
     private long likes;
     private Long authorId;
+    private String authorNickname;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -21,6 +22,7 @@ public class CommentResponse {
                 .id(comment.getId())
                 .content(comment.getContent())
                 .authorId(comment.getAuthorId())
+                .authorNickname(comment.getAuthorNickname())
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())
                 .likes(comment.getLikes())

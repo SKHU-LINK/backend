@@ -13,10 +13,11 @@ public class CommentCreator {
 
     private final CommentRepository commentRepository;
 
-    public Comment create(Long postId, Long userId, String content) {
+    public Comment create(Long postId, Long userId, String authorNickname, String content) {
         Comment comment = Comment.builder()
                 .postId(postId)
                 .authorId(userId)
+                .authorNickname(authorNickname)
                 .content(content)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())

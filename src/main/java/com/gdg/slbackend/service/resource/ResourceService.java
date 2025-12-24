@@ -66,6 +66,7 @@ public class ResourceService {
         Resource resource = resourceCreator.create(
                 communityId,
                 userId,
+                userFinder.findUserNameByIdOrThrow(userId),
                 resourceRequest.getTitle(),
                 imageUrl
         );

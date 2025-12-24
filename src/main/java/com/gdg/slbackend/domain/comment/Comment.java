@@ -33,16 +33,19 @@ public class Comment {
     @Column(nullable = false)
     private Long authorId;
 
+    private String authorNickname;
+
     private Long likes;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @Builder
-    private Comment(String content, Long postId, Long authorId, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private Comment(String content, Long postId, Long authorId, String authorNickname, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.content = content;
         this.postId = postId;
         this.authorId = authorId;
+        this.authorNickname = authorNickname;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }

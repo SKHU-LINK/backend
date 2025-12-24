@@ -27,6 +27,8 @@ public class Resource {
 
     private Long uploaderId;
 
+    private String uploaderNickname;
+
     private String title;
 
     private LocalDateTime createdAt;
@@ -38,9 +40,10 @@ public class Resource {
     private String imageUrl;
 
     @Builder
-    public Resource(Long communityId, Long uploaderId, String title, String imageUrl, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Resource(Long communityId, Long uploaderId, String uploaderNickname, String title, String imageUrl, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.communityId = communityId;
         this.uploaderId = uploaderId;
+        this.uploaderNickname = uploaderNickname;
         this.title = title;
         this.imageUrl = imageUrl;
         this.createdAt = createdAt;
