@@ -125,13 +125,15 @@ public class ResourceService {
 
         log.info("Before return download response");
 
-        return ResourceDownloadResponse.builder()
+        ResourceDownloadResponse resourceDownloadResponse = ResourceDownloadResponse.builder()
                 .resourceId(resource.getId())
                 .downloadUrl(downloadUrl)
+
                 .build();
 
-
         log.info("After build response");
+
+        return resourceDownloadResponse;
     }
 
     /* ================= 삭제 ================= */
