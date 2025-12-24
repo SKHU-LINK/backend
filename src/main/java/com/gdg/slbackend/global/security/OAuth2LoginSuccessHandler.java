@@ -1,7 +1,10 @@
 package com.gdg.slbackend.global.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gdg.slbackend.api.auth.dto.AuthTokenResponse;
+import com.gdg.slbackend.global.response.ApiResponse;
 import com.gdg.slbackend.service.auth.AuthService;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -24,10 +28,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final AuthService authService;
 
     @Value("${app.frontend.local-callback-url}")
-    private String localCallbackUrl;
-
-    @Value("${app.frontend.prod-callback-url}")
-    private String prodCallbackUrl;
+    private String frontDomain;
 
     @Override
     public void onAuthenticationSuccess(
@@ -41,10 +42,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         AuthTokenResponse tokenResponse =
                 authService.handleMicrosoftLogin((OAuth2AuthenticationToken) authentication);
 
-        String redirectBaseUrl = resolveRedirectUrl(request);
-
         String redirectUrl = UriComponentsBuilder
-                .fromUriString(redirectBaseUrl)
+                .fromUriString(frontDomain + "/auth/callback")
                 .fragment("accessToken=" + tokenResponse.getAccessToken()
                         + "&refreshToken=" + tokenResponse.getRefreshToken())
                 .build()
@@ -53,15 +52,5 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         log.info("Redirect to: {}", redirectUrl);
 
         response.sendRedirect(redirectUrl);
-    }
-
-    private String resolveRedirectUrl(HttpServletRequest request) {
-        String origin = request.getHeader("Origin");
-        log.info("Request Origin: {}", origin);
-
-        if (origin != null && origin.contains("localhost")) {
-            return localCallbackUrl;
-        }
-        return prodCallbackUrl;
     }
 }
