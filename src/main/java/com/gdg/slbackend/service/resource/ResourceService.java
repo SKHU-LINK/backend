@@ -7,6 +7,7 @@ import com.gdg.slbackend.api.resource.dto.ResourceDownloadResponse;
 import com.gdg.slbackend.api.resource.dto.ResourceRequest;
 import com.gdg.slbackend.api.resource.dto.ResourceResponse;
 import com.gdg.slbackend.domain.resource.Resource;
+import com.gdg.slbackend.domain.resource.ResourceRepository;
 import com.gdg.slbackend.global.enums.MileageType;
 import com.gdg.slbackend.global.exception.ErrorCode;
 import com.gdg.slbackend.global.exception.GlobalException;
@@ -20,6 +21,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -33,17 +36,16 @@ public class ResourceService {
     private final ResourceUpdater resourceUpdater;
     private final ResourceDeleter resourceDeleter;
 
-    private final S3Uploader s3Uploader;
-    private final AmazonS3 amazonS3Client;
-
     private final CommunityMembershipFinder communityMembershipFinder;
-
-    private final UserService userService;
     private final UserFinder userFinder;
+
     private final MileageService mileageService;
 
+    private final S3Uploader s3Uploader;
+    private final S3PresignedUrlService presignedUrlService;
+
     @Value("${cloud.aws.s3.bucket}")
-    private String bucketName;
+    private String bucket;
 
     /* ================= 조회 ================= */
 
@@ -101,26 +103,25 @@ public class ResourceService {
         return ResourceResponse.from(resource);
     }
 
-    @Transactional
-    public ResourceDownloadResponse downloadResource(Long resourceId, Long downloaderId) {
-        // 1. 리소스 조회
+    public ResourceDownloadResponse getDownloadUrl(Long resourceId, Long downloaderId) {
+
         Resource resource = resourceFinder.findByIdOrThrow(resourceId);
 
-        // 2. 마일리지 처리
+        // 1️⃣ imageUrl → S3 key 추출 + 디코딩
+        String key = extractKey(resource.getImageUrl());
+
+        // 2️⃣ Presigned URL 생성
+        String downloadUrl = presignedUrlService.generateDownloadUrl(
+                bucket,
+                key
+        );
+
         mileageService.change(downloaderId, MileageType.RESOURCE_DOWNLOAD);
         mileageService.change(resource.getUploader().getId(), MileageType.RESOURCE_DOWNLOAD_UPLOADER_REWARD);
 
-        Date expiration = new Date();
-        long expTime = expiration.getTime();
-        expTime += TimeUnit.MINUTES.toMillis(3);
-        expiration.setTime(expTime); // 3 Minute
-
-        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, resource.getTitle())
-                .withMethod(HttpMethod.GET)
-                .withExpiration(expiration);
-
         return ResourceDownloadResponse.builder()
-                .url(amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest).toString())
+                .resourceId(resource.getId())
+                .downloadUrl(downloadUrl)
                 .build();
     }
 
@@ -148,4 +149,26 @@ public class ResourceService {
             throw new GlobalException(ErrorCode.RESOURCE_MODIFY_FORBIDDEN);
         }
     }
+
+    private String extractKey(String imageUrl) {
+        if (imageUrl == null) {
+            throw new IllegalArgumentException("imageUrl is null");
+        }
+
+        String key;
+
+        if (imageUrl.startsWith("http")) {
+            int idx = imageUrl.indexOf(".amazonaws.com/");
+            if (idx == -1) {
+                throw new IllegalArgumentException("Invalid S3 URL format: " + imageUrl);
+            }
+            key = imageUrl.substring(idx + ".amazonaws.com/".length());
+        } else {
+            key = imageUrl;
+        }
+
+        // 🔥 핵심: URL 디코딩
+        return URLDecoder.decode(key, StandardCharsets.UTF_8);
+    }
+
 }

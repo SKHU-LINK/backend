@@ -61,13 +61,21 @@ public class ResourceController {
                 ));
     }
 
+//    @GetMapping("/{resourceId}/download")
+//    public ResponseEntity<ResourceDownloadResponse> downloadResource(
+//            @PathVariable Long resourceId,
+//            @AuthenticationPrincipal UserPrincipal principal
+//    ) {
+//        ResourceDownloadResponse response = resourceService.downloadResource(resourceId, principal.getId());
+//        return ResponseEntity.ok(response);
+//    }
+
     @GetMapping("/{resourceId}/download")
-    public ResponseEntity<ResourceDownloadResponse> downloadResource(
+    public ResourceDownloadResponse getResourceDownloadUrl(
             @PathVariable Long resourceId,
             @AuthenticationPrincipal UserPrincipal principal
     ) {
-        ResourceDownloadResponse response = resourceService.downloadResource(resourceId, principal.getId());
-        return ResponseEntity.ok(response);
+        return resourceService.getDownloadUrl(resourceId, principal.getId());
     }
 
     @PatchMapping("/resources/{resourceId}")
