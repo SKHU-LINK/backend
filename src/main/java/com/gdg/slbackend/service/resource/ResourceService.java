@@ -1,13 +1,9 @@
 package com.gdg.slbackend.service.resource;
 
-import com.amazonaws.HttpMethod;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.gdg.slbackend.api.resource.dto.ResourceDownloadResponse;
 import com.gdg.slbackend.api.resource.dto.ResourceRequest;
 import com.gdg.slbackend.api.resource.dto.ResourceResponse;
 import com.gdg.slbackend.domain.resource.Resource;
-import com.gdg.slbackend.domain.resource.ResourceRepository;
 import com.gdg.slbackend.global.enums.MileageType;
 import com.gdg.slbackend.global.exception.ErrorCode;
 import com.gdg.slbackend.global.exception.GlobalException;
@@ -15,18 +11,17 @@ import com.gdg.slbackend.global.util.S3Uploader;
 import com.gdg.slbackend.service.communityMembership.CommunityMembershipFinder;
 import com.gdg.slbackend.service.mileage.MileageService;
 import com.gdg.slbackend.service.user.UserFinder;
-import com.gdg.slbackend.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ResourceService {
@@ -128,10 +123,15 @@ public class ResourceService {
         mileageService.change(downloaderId, MileageType.RESOURCE_DOWNLOAD);
         mileageService.change(resource.getUploader().getId(), MileageType.RESOURCE_DOWNLOAD_UPLOADER_REWARD);
 
+        log.info("Before return download response");
+
         return ResourceDownloadResponse.builder()
                 .resourceId(resource.getId())
                 .downloadUrl(downloadUrl)
                 .build();
+
+
+        log.info("After build response");
     }
 
     /* ================= 삭제 ================= */
