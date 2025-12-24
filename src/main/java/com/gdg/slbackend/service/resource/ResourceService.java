@@ -68,17 +68,26 @@ public class ResourceService {
             Long userId,
             ResourceRequest resourceRequest
     ) {
-        String imageUrl = null;
+        String imageKey = null;
 
-        if (resourceRequest.getMultipartFile() != null && !resourceRequest.getMultipartFile().isEmpty()) {
-            imageUrl = s3Uploader.uploadFile(resourceRequest.getMultipartFile(), "resources");
+        if (resourceRequest.getMultipartFile() != null &&
+                !resourceRequest.getMultipartFile().isEmpty()) {
+
+            // 1️⃣ 업로더는 URL 반환
+            String uploadedUrl = s3Uploader.uploadFile(
+                    resourceRequest.getMultipartFile(),
+                    "resources"
+            );
+
+            // 2️⃣ URL → key 추출 + 디코딩
+            imageKey = extractKey(uploadedUrl);
         }
 
         Resource resource = resourceCreator.create(
                 communityId,
                 userFinder.findByIdOrThrow(userId),
                 resourceRequest.getTitle(),
-                imageUrl
+                imageKey // 🔥 key만 저장
         );
 
         mileageService.change(userId, MileageType.RESOURCE_UPLOAD_REWARD);
