@@ -18,12 +18,14 @@ public class ResourceCreator {
     public Resource create(
             Long communityId,
             Long uploaderId,
+            String uploaderNickname,
             String title,
             String imageUrl
     ) {
         Resource resource = Resource.builder()
                 .communityId(communityId)
                 .uploaderId(uploaderId)
+                .uploaderNickname(uploaderNickname)
                 .title(title)
                 .imageUrl(imageUrl)
                 .createdAt(LocalDateTime.now())

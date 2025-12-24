@@ -14,6 +14,7 @@ public class ResourceResponse {
     private String title;
     private String fileId;
     private Long uploaderId;
+    private String uploaderNickname;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -23,6 +24,7 @@ public class ResourceResponse {
                 .title(resource.getTitle())
                 .fileId(resource.getImageUrl())
                 .uploaderId(resource.getUploaderId())
+                .uploaderNickname(resource.getUploaderNickname())
                 .createdAt(resource.getCreatedAt())
                 .updatedAt(resource.getUpdatedAt())
                 .build();
