@@ -19,6 +19,7 @@ public class CommentCreator {
                 .postId(postId)
                 .author(author)
                 .content(content)
+                .likes(0L)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();

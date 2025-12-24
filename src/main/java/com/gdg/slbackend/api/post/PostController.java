@@ -40,10 +40,8 @@ public class PostController {
             @ModelAttribute @Valid PostRequest postRequest,
             @AuthenticationPrincipal UserPrincipal principal
     ) {
-        postRequest.setCommunityId(communityId);
-
         PostResponse response =
-                postService.createPost(postRequest, principal.getId());
+                postService.createPost(postRequest, communityId, principal.getId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

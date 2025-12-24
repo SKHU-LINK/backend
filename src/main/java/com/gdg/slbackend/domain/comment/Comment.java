@@ -44,10 +44,11 @@ public class Comment {
     private LocalDateTime updatedAt;
 
     @Builder
-    private Comment(String content, Long postId, User author, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private Comment(String content, Long postId, User author, Long likes, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.content = content;
         this.postId = postId;
         this.author = author;
+        this.likes = likes;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }

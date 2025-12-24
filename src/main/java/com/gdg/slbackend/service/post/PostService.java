@@ -31,7 +31,7 @@ public class PostService {
 
     final private S3Uploader s3Uploader;
 
-    public PostResponse createPost(PostRequest postRequest, Long userId) {
+    public PostResponse createPost(PostRequest postRequest, Long communityId, Long userId) {
         String imageUrl = null;
 
         if (postRequest.getMultipartFile() != null && !postRequest.getMultipartFile().isEmpty()) {
@@ -39,7 +39,7 @@ public class PostService {
         }
 
         return PostResponse.from(
-                postCreator.createPost(postRequest, userId, imageUrl)
+                postCreator.createPost(postRequest, userId, communityId, imageUrl)
         );
     }
 

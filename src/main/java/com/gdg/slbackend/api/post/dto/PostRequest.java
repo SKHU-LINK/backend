@@ -16,9 +16,6 @@ public class PostRequest {
     private String content;
 
     @NotNull
-    private Long communityId;
-
-    @NotNull
     private Category category;
 
     private MultipartFile multipartFile;

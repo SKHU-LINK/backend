@@ -15,7 +15,7 @@ public class PostCreator {
     final private PostRepository postRepository;
     final private UserFinder userFinder;
 
-    public Post createPost(PostRequest postRequest, Long authorId, String imageUrl) {
+    public Post createPost(PostRequest postRequest, Long authorId, Long communityId, String imageUrl) {
         Post post = Post.builder()
                 .category(postRequest.getCategory())
                 .title(postRequest.getTitle())
@@ -23,7 +23,7 @@ public class PostCreator {
                 .views(0L)
                 .likes(0L)
                 .pinned(false)
-                .communityId(postRequest.getCommunityId())
+                .communityId(communityId)
                 .authorId(authorId)
                 .authorNickname(userFinder.findUserNameByIdOrThrow(authorId))
                 .imageUrl(imageUrl)
