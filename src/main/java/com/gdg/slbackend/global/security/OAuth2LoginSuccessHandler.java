@@ -43,7 +43,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 authService.handleMicrosoftLogin((OAuth2AuthenticationToken) authentication);
 
         String redirectUrl = UriComponentsBuilder
-                .fromUriString(frontDomain + "/auth/callback")
+                .fromUriString(frontDomain)
                 .fragment("accessToken=" + tokenResponse.getAccessToken()
                         + "&refreshToken=" + tokenResponse.getRefreshToken())
                 .build()
