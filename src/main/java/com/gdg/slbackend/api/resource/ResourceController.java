@@ -5,6 +5,7 @@ import com.gdg.slbackend.api.resource.dto.ResourceRequest;
 import com.gdg.slbackend.api.resource.dto.ResourceResponse;
 import com.gdg.slbackend.global.security.UserPrincipal;
 import com.gdg.slbackend.service.resource.ResourceService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -60,12 +61,13 @@ public class ResourceController {
                 ));
     }
 
-    @PostMapping("/{resourceId}/download")
-    public ResourceDownloadResponse download(
+    @GetMapping("/{resourceId}/download")
+    public ResponseEntity<ResourceDownloadResponse> downloadResource(
             @PathVariable Long resourceId,
-            @AuthenticationPrincipal UserPrincipal user
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
-        return resourceService.downloadResource(resourceId, user.getId());
+        ResourceDownloadResponse response = resourceService.downloadResource(resourceId, principal.getId());
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/resources/{resourceId}")

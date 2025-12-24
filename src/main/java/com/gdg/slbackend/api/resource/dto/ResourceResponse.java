@@ -12,7 +12,10 @@ public class ResourceResponse {
 
     private Long id;
     private String title;
-    private String fileId;
+
+    // ⭕ 명확한 의미
+    private String imageUrl;
+
     private Long uploaderId;
     private String uploaderNickname;
     private LocalDateTime createdAt;
@@ -22,7 +25,7 @@ public class ResourceResponse {
         return ResourceResponse.builder()
                 .id(resource.getId())
                 .title(resource.getTitle())
-                .fileId(resource.getImageUrl())
+                .imageUrl(resource.getImageUrl())
                 .uploaderId(resource.getUploader().getId())
                 .uploaderNickname(resource.getUploader().getNickname())
                 .createdAt(resource.getCreatedAt())

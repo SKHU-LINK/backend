@@ -1,5 +1,8 @@
 package com.gdg.slbackend.service.resource;
 
+import com.amazonaws.HttpMethod;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.gdg.slbackend.api.resource.dto.ResourceDownloadResponse;
 import com.gdg.slbackend.api.resource.dto.ResourceRequest;
 import com.gdg.slbackend.api.resource.dto.ResourceResponse;
@@ -13,11 +16,13 @@ import com.gdg.slbackend.service.mileage.MileageService;
 import com.gdg.slbackend.service.user.UserFinder;
 import com.gdg.slbackend.service.user.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -29,12 +34,16 @@ public class ResourceService {
     private final ResourceDeleter resourceDeleter;
 
     private final S3Uploader s3Uploader;
+    private final AmazonS3 amazonS3Client;
 
     private final CommunityMembershipFinder communityMembershipFinder;
 
     private final UserService userService;
     private final UserFinder userFinder;
     private final MileageService mileageService;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketName;
 
     /* ================= 조회 ================= */
 
@@ -93,24 +102,26 @@ public class ResourceService {
     }
 
     @Transactional
-    public ResourceDownloadResponse downloadResource(
-            Long resourceId,
-            Long downloaderId
-    ) {
+    public ResourceDownloadResponse downloadResource(Long resourceId, Long downloaderId) {
         // 1. 리소스 조회
         Resource resource = resourceFinder.findByIdOrThrow(resourceId);
 
-        // 2. 자기 자료 다운로드 방지 (선택)
-//        if (resource.getUploaderId().equals(downloaderId)) {
-//            throw new GlobalException(ErrorCode.CANNOT_DOWNLOAD_OWN_RESOURCE);
-//        }
-
-        // 3. 마일리지 처리
+        // 2. 마일리지 처리
         mileageService.change(downloaderId, MileageType.RESOURCE_DOWNLOAD);
         mileageService.change(resource.getUploader().getId(), MileageType.RESOURCE_DOWNLOAD_UPLOADER_REWARD);
 
-        // 4. 실제 다운로드 정보 반환
-        return ResourceDownloadResponse.from(resource);
+        Date expiration = new Date();
+        long expTime = expiration.getTime();
+        expTime += TimeUnit.MINUTES.toMillis(3);
+        expiration.setTime(expTime); // 3 Minute
+
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, resource.getTitle())
+                .withMethod(HttpMethod.GET)
+                .withExpiration(expiration);
+
+        return ResourceDownloadResponse.builder()
+                .url(amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest).toString())
+                .build();
     }
 
     /* ================= 삭제 ================= */
