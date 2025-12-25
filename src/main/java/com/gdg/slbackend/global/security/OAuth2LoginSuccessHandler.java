@@ -27,7 +27,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final AuthService authService;
 
-    @Value("${app.frontend.callback-url-prod}")
+    @Value("${app.frontend.prod-callback-url}")
     private String frontDomain;
 
     @Override
