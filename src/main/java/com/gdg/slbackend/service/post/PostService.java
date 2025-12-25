@@ -9,52 +9,48 @@ import com.gdg.slbackend.global.util.S3Uploader;
 import com.gdg.slbackend.service.comment.CommentFinder;
 import com.gdg.slbackend.service.communityMembership.CommunityMembershipFinder;
 import com.gdg.slbackend.service.user.UserFinder;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
 public class PostService {
-    final private PostCreator postCreator;
-    final private PostFinder postFinder;
-    final private PostUpdater postUpdater;
-    final private PostDeleter postDeleter;
 
-    final private UserFinder userFinder;
-    final private CommentFinder commentFinder;
+    private final PostCreator postCreator;
+    private final PostFinder postFinder;
+    private final PostUpdater postUpdater;
+    private final PostDeleter postDeleter;
 
-    final private CommunityMembershipFinder communityMembershipFinder;
+    private final UserFinder userFinder;
+    private final CommentFinder commentFinder;
+    private final CommunityMembershipFinder communityMembershipFinder;
 
-    final private S3Uploader s3Uploader;
+    private final S3Uploader s3Uploader;
 
     public PostResponse createPost(PostRequest postRequest, Long communityId, Long userId) {
-        String imageUrl = null;
+        validatePostCreatePermission(communityId, userId);
 
-        if (postRequest.getMultipartFile() != null && !postRequest.getMultipartFile().isEmpty()) {
-            imageUrl = s3Uploader.uploadFile(postRequest.getMultipartFile(), "posts");
-        }
+        String imageUrl = uploadPostImageIfExists(postRequest.getMultipartFile());
 
-        return PostResponse.from(
-                postCreator.createPost(postRequest, userId, communityId, imageUrl)
-        );
+        Post post = postCreator.createPost(postRequest, userId, communityId, imageUrl);
+
+        return PostResponse.from(post, commentFinder.countByPostId(post.getId()));
     }
 
     public Optional<PostResponse> getPinnedPost(Long communityId) {
         return postFinder.findPinnedPost(communityId)
-                .map(post -> {
-                    long commentCount =
-                            commentFinder.countByPostId(post.getId());
-                    return PostResponse.from(post, commentCount);
-                });
+                .map(post -> PostResponse.from(post, commentFinder.countByPostId(post.getId())));
     }
 
+    @Transactional
     public PostResponse getPost(Long communityId, Long postId) {
         Post post = postFinder.findByIdOrThrow(postId);
 
+        // TODO: communityId 검증이 필요하면 여기서 post.getCommunityId()와 비교해서 막기
         postUpdater.updateViews(post);
 
         return PostResponse.from(post, commentFinder.countByPostId(postId));
@@ -63,14 +59,11 @@ public class PostService {
     public List<PostResponse> getAllPosts(Long communityId, Long lastId) {
         return postFinder.findAllPost(communityId, lastId)
                 .stream()
-                .map(post -> {
-                    long commentCount =
-                            commentFinder.countByPostId(post.getId());
-                    return PostResponse.from(post, commentCount);
-                })
+                .map(post -> PostResponse.from(post, commentFinder.countByPostId(post.getId())))
                 .toList();
     }
 
+    @Transactional
     public PostResponse updatePinned(Long postId, Long userId) {
         Post post = postFinder.findByIdOrThrow(postId);
 
@@ -86,17 +79,14 @@ public class PostService {
 
         validatePostModifyPermission(post, userId);
 
-        String newImageUrl = null;
-        MultipartFile file = postRequest.getMultipartFile();
-        if (file != null && !file.isEmpty()) {
-            newImageUrl = s3Uploader.uploadFile(file, "posts");
-        }
+        String newImageUrl = uploadPostImageIfExists(postRequest.getMultipartFile());
 
         postUpdater.updatePost(postRequest, post, newImageUrl);
 
         return PostResponse.from(post, commentFinder.countByPostId(post.getId()));
     }
 
+    @Transactional
     public PostResponse updateLikes(Long postId) {
         Post post = postFinder.findByIdOrThrow(postId);
 
@@ -113,15 +103,29 @@ public class PostService {
         postDeleter.delete(post);
     }
 
+    private void validatePostCreatePermission(Long communityId, Long userId) {
+        boolean isMember = communityMembershipFinder.findById(communityId, userId).isPresent();
+        if (!isMember) {
+            throw new GlobalException(ErrorCode.NOT_COMMUNITY_MEMBER);
+        }
+    }
+
     private void validatePostModifyPermission(Post post, Long userId) {
         boolean isAuthor = post.getAuthorId().equals(userId);
-        boolean isCommunityAdmin =
-                communityMembershipFinder.isAdmin(userId, post.getCommunityId());
-        boolean isSystemAdmin =
-                userFinder.isSystemAdmin(userId);
+
+        // ✅ 인자 순서: (communityId, userId)
+        boolean isCommunityAdmin = communityMembershipFinder.isAdmin(post.getCommunityId(), userId);
+        boolean isSystemAdmin = userFinder.isSystemAdmin(userId);
 
         if (!isAuthor && !isCommunityAdmin && !isSystemAdmin) {
             throw new GlobalException(ErrorCode.POST_MODIFY_FORBIDDEN);
         }
+    }
+
+    private String uploadPostImageIfExists(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+        return s3Uploader.uploadFile(file, "posts");
     }
 }
