@@ -184,7 +184,7 @@ public class CommunityService {
     /* 커뮤니티 삭제 */
     @Transactional
     public void deleteCommunity(Long communityId, UserPrincipal principal) {
-        if(communityMembershipFinder.isCommunityAdmin(communityId, principal.getId())) {
+        if(!communityMembershipFinder.isCommunityAdmin(communityId, principal.getId())) {
             throw new GlobalException(ErrorCode.COMMUNITY_NOT_ADMIN);
         }
 
