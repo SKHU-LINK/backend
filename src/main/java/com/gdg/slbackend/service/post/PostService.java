@@ -6,7 +6,6 @@ import com.gdg.slbackend.domain.community.CommunityMembership;
 import com.gdg.slbackend.domain.post.Post;
 import com.gdg.slbackend.domain.post.PostLike;
 import com.gdg.slbackend.domain.post.PostLikeRepository;
-import com.gdg.slbackend.global.enums.Role;
 import com.gdg.slbackend.global.exception.ErrorCode;
 import com.gdg.slbackend.global.exception.GlobalException;
 import com.gdg.slbackend.global.util.S3Uploader;

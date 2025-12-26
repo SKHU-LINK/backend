@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -211,24 +212,17 @@ public class ResourceService {
 
 
     private String extractKey(String imageUrl) {
-        if (imageUrl == null) {
-            throw new IllegalArgumentException("imageUrl is null");
+        if (imageUrl == null || imageUrl.isBlank()) {
+            throw new IllegalArgumentException("imageUrl is null or blank");
         }
 
-        String key;
-
-        if (imageUrl.startsWith("http")) {
-            int idx = imageUrl.indexOf(".amazonaws.com/");
-            if (idx == -1) {
-                throw new IllegalArgumentException("Invalid S3 URL format: " + imageUrl);
-            }
-            key = imageUrl.substring(idx + ".amazonaws.com/".length());
-        } else {
-            key = imageUrl;
+        if (!imageUrl.startsWith("http")) {
+            return imageUrl; // key는 절대 가공하지 않는다
         }
 
-        // 🔥 핵심: URL 디코딩
-        return URLDecoder.decode(key, StandardCharsets.UTF_8);
+        URI uri = URI.create(imageUrl);
+        return uri.getPath().substring(1); // decode ❌
     }
+
 
 }
