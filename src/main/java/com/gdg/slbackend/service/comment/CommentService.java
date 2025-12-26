@@ -2,28 +2,25 @@ package com.gdg.slbackend.service.comment;
 
 import com.gdg.slbackend.api.comment.dto.CommentRequest;
 import com.gdg.slbackend.api.comment.dto.CommentResponse;
-import com.gdg.slbackend.api.post.dto.PostResponse;
 import com.gdg.slbackend.domain.comment.Comment;
-import com.gdg.slbackend.domain.post.Post;
 import com.gdg.slbackend.global.exception.ErrorCode;
 import com.gdg.slbackend.global.exception.GlobalException;
 import com.gdg.slbackend.service.communityMembership.CommunityMembershipFinder;
 import com.gdg.slbackend.service.post.PostFinder;
 import com.gdg.slbackend.service.user.UserFinder;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class CommentService {
 
-    private final CommentFinder commentFinder;
     private final CommentCreator commentCreator;
-    private final CommentUpdater commentUpdater;
     private final CommentDeleter commentDeleter;
+    private final CommentFinder commentFinder;
+    private final CommentUpdater commentUpdater;
 
     private final UserFinder userFinder;
     private final PostFinder postFinder;
@@ -40,21 +37,28 @@ public class CommentService {
 
     /* 댓글 작성 */
     public CommentResponse createComment(Long postId, Long userId, CommentRequest request) {
-
-        Comment comment = commentCreator.create(postId, userFinder.findByIdOrThrow(userId), request.getContent());
+        Comment comment = commentCreator.create(
+                postId,
+                userFinder.findByIdOrThrow(userId),
+                request.getContent()
+        );
         return CommentResponse.from(comment);
     }
 
-    /* 댓글 수정 - 작성자만 */
+    /* 댓글 수정 */
+    @Transactional
     public CommentResponse updateComment(Long commentId, Long userId, CommentRequest request) {
         Comment comment = commentFinder.findByIdOrThrow(commentId);
 
         validateCommentModifyPermission(comment, userId);
 
         commentUpdater.update(comment, request.getContent());
+
         return CommentResponse.from(comment);
     }
 
+    /* 댓글 좋아요 */
+    @Transactional
     public CommentResponse updateLikes(Long commentId) {
         Comment comment = commentFinder.findByIdOrThrow(commentId);
 
@@ -63,7 +67,8 @@ public class CommentService {
         return CommentResponse.from(comment);
     }
 
-    /* 댓글 삭제 - 작성자 or 커뮤니티 ADMIN */
+    /* 댓글 삭제 */
+    @Transactional
     public void deleteComment(Long commentId, Long userId) {
         Comment comment = commentFinder.findByIdOrThrow(commentId);
 
@@ -80,15 +85,13 @@ public class CommentService {
             return;
         }
 
-        Long communityId = postFinder.findByIdOrThrow(comment.getPostId())
-                .getCommunityId();
+        Long communityId = postFinder.findByIdOrThrow(comment.getPostId()).getCommunityId();
 
-        boolean isCommunityAdmin =
-                communityMembershipFinder.isAdmin(userId, communityId);
+        // ✅ 인자 순서: (communityId, userId)
+        boolean isCommunityAdmin = communityMembershipFinder.isAdmin(communityId, userId);
 
         if (!isCommunityAdmin) {
             throw new GlobalException(ErrorCode.COMMENT_MODIFY_FORBIDDEN);
         }
     }
-
 }

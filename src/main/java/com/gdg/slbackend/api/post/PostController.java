@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,10 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,9 +30,11 @@ import java.util.List;
 @Tag(name = "Post", description = "Community posts")
 @SecurityRequirement(name = "bearerAuth")
 public class PostController {
+
     private final PostService postService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Create post")
     public ResponseEntity<PostResponse> createPost(
             @PathVariable Long communityId,
             @ModelAttribute @Valid PostRequest postRequest,
@@ -97,7 +97,7 @@ public class PostController {
     @Operation(summary = "Update post")
     public ResponseEntity<PostResponse> updatePost(
             @PathVariable Long postId,
-            @RequestPart("post") @Valid PostRequest postRequest,
+            @ModelAttribute @Valid PostRequest postRequest,
             @AuthenticationPrincipal UserPrincipal principal
     ) {
         return ResponseEntity.ok(
