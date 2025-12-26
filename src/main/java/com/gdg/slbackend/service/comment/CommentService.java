@@ -89,7 +89,7 @@ public class CommentService {
         Long communityId = postFinder.findByIdOrThrow(comment.getPostId()).getCommunityId();
 
         // ✅ 인자 순서: (communityId, userId)
-        boolean isCommunityAdmin = communityMembershipFinder.findAdminMembershipOrThrow(communityId, userId).getRole().equals(Role.ADMIN);
+        boolean isCommunityAdmin = communityMembershipFinder.findAdminMembershipOrThrow(communityId, userId).getRole().equals("ADMIN");
 
         if (!isCommunityAdmin) {
             throw new GlobalException(ErrorCode.COMMENT_MODIFY_FORBIDDEN);

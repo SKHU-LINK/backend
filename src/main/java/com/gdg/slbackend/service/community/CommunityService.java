@@ -186,7 +186,7 @@ public class CommunityService {
     public void deleteCommunity(Long communityId, UserPrincipal principal) {
         CommunityMembership communityMembership = communityMembershipFinder.findByIdOrThrow(communityId, principal.getId());
 
-        if(!communityMembership.getRole().equals(Role.ADMIN)) {
+        if(!communityMembership.getRole().equals("ADMIN")) {
             throw new GlobalException(ErrorCode.COMMUNITY_NOT_ADMIN);
         }
 

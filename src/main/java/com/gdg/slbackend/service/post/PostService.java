@@ -121,7 +121,7 @@ public class PostService {
 
     private void validatePostModifyPermission(Post post, Long userId) {
         boolean isAuthor = post.getAuthorId().equals(userId);
-        boolean isCommunityAdmin = communityMembershipFinder.findAdminMembershipOrThrow(post.getCommunityId(), userId).getRole().equals(Role.ADMIN);
+        boolean isCommunityAdmin = communityMembershipFinder.findAdminMembershipOrThrow(post.getCommunityId(), userId).getRole().equals("ADMIN");
         boolean isSystemAdmin = userFinder.isSystemAdmin(userId);
 
         if (!isAuthor && !isCommunityAdmin && !isSystemAdmin) {
