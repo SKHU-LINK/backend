@@ -59,7 +59,13 @@ public enum ErrorCode {
      * */
     RESOURCE_NOT_FOUND("해당 파일이 존재하지 않습니다."),
     RESOURCE_MODIFY_FORBIDDEN("해당 파일을 수정 및 삭제할 수 있는 권한 이 없습니다."),
-    COMMUNITY_DELETE_FORBIDDEN("커뮤니티를 삭제하는 데에 오류가 발생했습니다.");
+    COMMUNITY_DELETE_FORBIDDEN("커뮤니티를 삭제하는 데에 오류가 발생했습니다."),
+    MILEAGE_REWARD_FAILED("마일리지 보상 오류"),
+    PRESIGNED_URL_GENERATION_FAILED("다운로드 주소 생성 오류"),
+    INVALID_RESOURCE_IMAGE_URL("서버에 이미지 주소가 존재하지 않음"),
+    RESOURCE_IMAGE_URL_NOT_FOUND("자료 이미지 주소를 찾을 수 없음"),
+    RESOURCE_UPLOADER_NOT_FOUND("자료 등록자가 없습니다."),
+    MILEAGE_CHANGE_FAILED("마일리지 변경 오류");
 
 
 

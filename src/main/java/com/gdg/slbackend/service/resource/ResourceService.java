@@ -4,6 +4,7 @@ import com.gdg.slbackend.api.resource.dto.ResourceDownloadResponse;
 import com.gdg.slbackend.api.resource.dto.ResourceRequest;
 import com.gdg.slbackend.api.resource.dto.ResourceResponse;
 import com.gdg.slbackend.domain.resource.Resource;
+import com.gdg.slbackend.domain.user.User;
 import com.gdg.slbackend.global.enums.MileageType;
 import com.gdg.slbackend.global.enums.Role;
 import com.gdg.slbackend.global.exception.ErrorCode;
@@ -108,33 +109,68 @@ public class ResourceService {
         return ResourceResponse.from(resource);
     }
 
+    @Transactional
     public ResourceDownloadResponse getDownloadUrl(Long resourceId, Long downloaderId) {
 
+        // 1️⃣ 리소스 조회
         Resource resource = resourceFinder.findByIdOrThrow(resourceId);
 
-        // 1️⃣ imageUrl → S3 key 추출 + 디코딩
-        String key = extractKey(resource.getImageUrl());
+        // 2️⃣ imageUrl 검증
+        String imageUrl = resource.getImageUrl();
+        if (imageUrl == null || imageUrl.isBlank()) {
+            throw new GlobalException(ErrorCode.RESOURCE_IMAGE_URL_NOT_FOUND);
+        }
 
-        // 2️⃣ Presigned URL 생성
-        String downloadUrl = presignedUrlService.generateDownloadUrl(
-                bucket,
-                key
-        );
+        // 3️⃣ S3 key 추출
+        String key;
+        try {
+            key = extractKey(imageUrl);
+        } catch (Exception e) {
+            log.error("Failed to extract S3 key. imageUrl={}", imageUrl, e);
+            throw new GlobalException(ErrorCode.INVALID_RESOURCE_IMAGE_URL);
+        }
 
-        mileageService.change(downloaderId, MileageType.RESOURCE_DOWNLOAD);
-        mileageService.change(resource.getUploader().getId(), MileageType.RESOURCE_DOWNLOAD_UPLOADER_REWARD);
+        // 4️⃣ Presigned URL 생성
+        String downloadUrl;
+        try {
+            downloadUrl = presignedUrlService.generateDownloadUrl(bucket, key);
+        } catch (Exception e) {
+            log.error("Failed to generate presigned url. bucket={}, key={}", bucket, key, e);
+            throw new GlobalException(ErrorCode.PRESIGNED_URL_GENERATION_FAILED);
+        }
 
-        log.info("Before return download response");
+        // 5️⃣ 업로더 검증
+        User uploader = resource.getUploader();
+        if (uploader == null || uploader.getId() == null) {
+            throw new GlobalException(ErrorCode.RESOURCE_UPLOADER_NOT_FOUND);
+        }
 
-        ResourceDownloadResponse resourceDownloadResponse = ResourceDownloadResponse.builder()
+        // 6️⃣ 마일리지 처리 (다운로더)
+        try {
+            mileageService.change(downloaderId, MileageType.RESOURCE_DOWNLOAD);
+        } catch (Exception e) {
+            log.error("Failed to change mileage for downloader. downloaderId={}", downloaderId, e);
+            throw new GlobalException(ErrorCode.MILEAGE_CHANGE_FAILED);
+        }
+
+        // 7️⃣ 마일리지 처리 (업로더 보상)
+        try {
+            mileageService.change(
+                    uploader.getId(),
+                    MileageType.RESOURCE_DOWNLOAD_UPLOADER_REWARD
+            );
+        } catch (Exception e) {
+            log.error("Failed to reward uploader mileage. uploaderId={}", uploader.getId(), e);
+            throw new GlobalException(ErrorCode.MILEAGE_REWARD_FAILED);
+        }
+
+        // 8️⃣ 응답 생성
+        return ResourceDownloadResponse.builder()
                 .resourceId(resource.getId())
                 .downloadUrl(downloadUrl)
                 .build();
-
-        log.info("After build response");
-
-        return resourceDownloadResponse;
     }
+
 
     /* ================= 삭제 ================= */
 

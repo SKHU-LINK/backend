@@ -30,4 +30,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             @Param("lastId") Long lastId,
             Pageable pageable
     );
+
+    void deleteByCommunityId(Long communityId);
 }
