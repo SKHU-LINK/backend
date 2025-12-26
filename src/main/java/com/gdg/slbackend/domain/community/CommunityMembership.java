@@ -3,6 +3,8 @@ package com.gdg.slbackend.domain.community;
 import com.gdg.slbackend.domain.user.User;
 import com.gdg.slbackend.global.enums.Role;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -38,6 +40,7 @@ public class CommunityMembership {
     @JoinColumn(name = "community_id")
     private Community community;
 
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     private boolean isPinned;
