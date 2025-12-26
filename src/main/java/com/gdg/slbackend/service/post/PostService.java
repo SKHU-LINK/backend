@@ -2,11 +2,14 @@ package com.gdg.slbackend.service.post;
 
 import com.gdg.slbackend.api.post.dto.PostRequest;
 import com.gdg.slbackend.api.post.dto.PostResponse;
+import com.gdg.slbackend.domain.community.CommunityMembership;
 import com.gdg.slbackend.domain.post.Post;
+import com.gdg.slbackend.global.enums.Role;
 import com.gdg.slbackend.global.exception.ErrorCode;
 import com.gdg.slbackend.global.exception.GlobalException;
 import com.gdg.slbackend.global.util.S3Uploader;
 import com.gdg.slbackend.service.comment.CommentFinder;
+import com.gdg.slbackend.service.communityMembership.CommunityMembershipCreator;
 import com.gdg.slbackend.service.communityMembership.CommunityMembershipFinder;
 import com.gdg.slbackend.service.user.UserFinder;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,7 @@ public class PostService {
     final private UserFinder userFinder;
     final private CommentFinder commentFinder;
 
+    final private CommunityMembershipCreator communityMembershipCreator;
     final private CommunityMembershipFinder communityMembershipFinder;
 
     final private S3Uploader s3Uploader;
@@ -60,7 +64,13 @@ public class PostService {
         return PostResponse.from(post, commentFinder.countByPostId(postId));
     }
 
-    public List<PostResponse> getAllPosts(Long communityId, Long lastId) {
+    public List<PostResponse> getAllPosts(Long communityId, Long lastId, Long userId) {
+        CommunityMembership communityMembership = communityMembershipFinder.findByIdOrThrow(communityId, userId);
+        if(communityMembership == null) {
+            communityMembershipCreator.createCommunityMembershipByCommunityId(communityId, userId, Role.MEMBER, false);
+        }
+
+
         return postFinder.findAllPost(communityId, lastId)
                 .stream()
                 .map(post -> {
@@ -116,7 +126,7 @@ public class PostService {
     private void validatePostModifyPermission(Post post, Long userId) {
         boolean isAuthor = post.getAuthorId().equals(userId);
         boolean isCommunityAdmin =
-                communityMembershipFinder.isAdmin(userId, post.getCommunityId());
+                communityMembershipFinder.findAdminMembershipOrThrow(userId, post.getCommunityId()).getRole().equals(Role.ADMIN);
         boolean isSystemAdmin =
                 userFinder.isSystemAdmin(userId);
 
