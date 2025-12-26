@@ -20,4 +20,6 @@ public interface CommunityMembershipRepository
     List<CommunityMembership> findByCommunityOrderByIsPinnedDescIdAsc(
             Community community
     );
+
+    boolean existsByCommunityIdAndUserIdAndRole(Long communityId, Long userId, Role role);
 }

@@ -57,10 +57,13 @@ public class CommunityMembershipFinder {
     @Transactional(readOnly = true)
     public boolean isCommunityAdmin(Long communityId, Long userId) {
         return communityMembershipRepository
-                .findByCommunityIdAndUserId(communityId, userId)
-                .map(m -> m.getRole() == Role.ADMIN)
-                .orElse(false); // 🔥 이게 없으면 500 남
+                .existsByCommunityIdAndUserIdAndRole(
+                        communityId,
+                        userId,
+                        Role.ADMIN
+                );
     }
+
 
     @Transactional(readOnly = true)
     public List<CommunityMembership> findAllByUserId(Long userId) {

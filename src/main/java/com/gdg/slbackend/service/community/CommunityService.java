@@ -184,16 +184,14 @@ public class CommunityService {
     /* 커뮤니티 삭제 */
     @Transactional
     public void deleteCommunity(Long communityId, UserPrincipal principal) {
-        boolean isCommunityAdmin =
-                communityMembershipFinder.isCommunityAdmin(communityId, principal.getId());
-        boolean isSystemAdmin =
-                userFinder.isSystemAdmin(principal.getId());
+        boolean canDelete =
+                userFinder.isSystemAdmin(principal.getId())
+                        || communityMembershipFinder.isCommunityAdmin(communityId, principal.getId());
 
-        if (!isCommunityAdmin && !isSystemAdmin) {
+        if (!canDelete) {
             throw new GlobalException(ErrorCode.COMMUNITY_DELETE_FORBIDDEN);
         }
 
         communityDeleter.deleteById(communityId);
     }
-
 }
