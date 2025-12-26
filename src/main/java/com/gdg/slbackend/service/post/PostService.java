@@ -4,6 +4,8 @@ import com.gdg.slbackend.api.post.dto.PostRequest;
 import com.gdg.slbackend.api.post.dto.PostResponse;
 import com.gdg.slbackend.domain.community.CommunityMembership;
 import com.gdg.slbackend.domain.post.Post;
+import com.gdg.slbackend.domain.post.PostLike;
+import com.gdg.slbackend.domain.post.PostLikeRepository;
 import com.gdg.slbackend.global.enums.Role;
 import com.gdg.slbackend.global.exception.ErrorCode;
 import com.gdg.slbackend.global.exception.GlobalException;
@@ -32,6 +34,8 @@ public class PostService {
     private final CommentFinder commentFinder;
     private final CommunityMembershipCreator communityMembershipCreator;
     private final CommunityMembershipFinder communityMembershipFinder;
+
+    private final PostLikeRepository postLikeRepository;
 
     private final S3Uploader s3Uploader;
 
@@ -95,14 +99,25 @@ public class PostService {
         return PostResponse.from(post, commentFinder.countByPostId(post.getId()));
     }
 
-    @Transactional
-    public PostResponse updateLikes(Long postId) {
+    public PostResponse toggleLike(Long postId, Long userId) {
         Post post = postFinder.findByIdOrThrow(postId);
 
-        postUpdater.updateLikes(post);
+        Optional<PostLike> like =
+                postLikeRepository.findByUserIdAndPost(userId, post);
 
-        return PostResponse.from(post, commentFinder.countByPostId(post.getId()));
+        if (like.isPresent()) {
+            // 좋아요 취소
+            postLikeRepository.delete(like.get());
+            post.decreaseLikes();
+        } else {
+            // 좋아요
+            postLikeRepository.save(new PostLike(userId, post));
+            post.increaseLikes();
+        }
+
+        return PostResponse.from(post);
     }
+
 
     public void deletePost(Long postId, Long userId) {
         Post post = postFinder.findByIdOrThrow(postId);

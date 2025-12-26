@@ -89,6 +89,12 @@ public class Post {
         ++likes;
     }
 
+    public void decreaseLikes() {
+        if (likes > 0) {
+            likes--;
+        }
+    }
+
     public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }

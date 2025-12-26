@@ -106,14 +106,16 @@ public class PostController {
     }
 
     @PatchMapping("/{postId}/likes")
-    @Operation(summary = "Update post likes")
-    public ResponseEntity<PostResponse> updateLikes(
-            @PathVariable Long postId
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<PostResponse> toggleLike(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
         return ResponseEntity.ok(
-                postService.updateLikes(postId)
+                postService.toggleLike(postId, principal.getId())
         );
     }
+
 
     @DeleteMapping("/{postId}")
     @Operation(summary = "Delete post")
