@@ -5,6 +5,7 @@ import com.gdg.slbackend.api.resource.dto.ResourceRequest;
 import com.gdg.slbackend.api.resource.dto.ResourceResponse;
 import com.gdg.slbackend.domain.resource.Resource;
 import com.gdg.slbackend.global.enums.MileageType;
+import com.gdg.slbackend.global.enums.Role;
 import com.gdg.slbackend.global.exception.ErrorCode;
 import com.gdg.slbackend.global.exception.GlobalException;
 import com.gdg.slbackend.global.util.S3Uploader;
@@ -151,7 +152,7 @@ public class ResourceService {
     private void validateModifyPermission(Resource resource, Long userId) {
         boolean isUploader = resource.getUploader().getId().equals(userId);
         boolean isCommunityAdmin =
-                communityMembershipFinder.isAdmin(userId, resource.getCommunityId());
+                communityMembershipFinder.findAdminMembershipOrThrow(resource.getCommunityId(), userId).getRole().equals(Role.ADMIN);
         boolean isSystemAdmin =
                 userFinder.isSystemAdmin(userId);
 

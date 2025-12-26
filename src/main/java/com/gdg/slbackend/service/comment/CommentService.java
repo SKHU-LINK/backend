@@ -3,6 +3,7 @@ package com.gdg.slbackend.service.comment;
 import com.gdg.slbackend.api.comment.dto.CommentRequest;
 import com.gdg.slbackend.api.comment.dto.CommentResponse;
 import com.gdg.slbackend.domain.comment.Comment;
+import com.gdg.slbackend.global.enums.Role;
 import com.gdg.slbackend.global.exception.ErrorCode;
 import com.gdg.slbackend.global.exception.GlobalException;
 import com.gdg.slbackend.service.communityMembership.CommunityMembershipFinder;
@@ -88,7 +89,7 @@ public class CommentService {
         Long communityId = postFinder.findByIdOrThrow(comment.getPostId()).getCommunityId();
 
         // ✅ 인자 순서: (communityId, userId)
-        boolean isCommunityAdmin = communityMembershipFinder.isAdmin(communityId, userId);
+        boolean isCommunityAdmin = communityMembershipFinder.findAdminMembershipOrThrow(communityId, userId).getRole().equals(Role.ADMIN);
 
         if (!isCommunityAdmin) {
             throw new GlobalException(ErrorCode.COMMENT_MODIFY_FORBIDDEN);

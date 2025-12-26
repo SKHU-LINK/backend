@@ -2,12 +2,14 @@ package com.gdg.slbackend.service.post;
 
 import com.gdg.slbackend.api.post.dto.PostRequest;
 import com.gdg.slbackend.api.post.dto.PostResponse;
+import com.gdg.slbackend.domain.community.CommunityMembership;
 import com.gdg.slbackend.domain.post.Post;
 import com.gdg.slbackend.global.enums.Role;
 import com.gdg.slbackend.global.exception.ErrorCode;
 import com.gdg.slbackend.global.exception.GlobalException;
 import com.gdg.slbackend.global.util.S3Uploader;
 import com.gdg.slbackend.service.comment.CommentFinder;
+import com.gdg.slbackend.service.communityMembership.CommunityMembershipCreator;
 import com.gdg.slbackend.service.communityMembership.CommunityMembershipFinder;
 import com.gdg.slbackend.service.user.UserFinder;
 import java.util.List;
@@ -28,6 +30,7 @@ public class PostService {
 
     private final UserFinder userFinder;
     private final CommentFinder commentFinder;
+    private final CommunityMembershipCreator communityMembershipCreator;
     private final CommunityMembershipFinder communityMembershipFinder;
 
     private final S3Uploader s3Uploader;
@@ -57,7 +60,12 @@ public class PostService {
         return PostResponse.from(post, commentFinder.countByPostId(postId));
     }
 
-    public List<PostResponse> getAllPosts(Long communityId, Long lastId) {
+    public List<PostResponse> getAllPosts(Long communityId, Long lastId, Long userId) {
+        CommunityMembership communityMembership = communityMembershipFinder.findByIdOrThrow(communityId, userId);
+        if(communityMembership == null) {
+            communityMembershipCreator.createCommunityMembershipByCommunityId(communityId, userId, Role.MEMBER, false);
+        }
+
         return postFinder.findAllPost(communityId, lastId)
                 .stream()
                 .map(post -> PostResponse.from(post, commentFinder.countByPostId(post.getId())))
