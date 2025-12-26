@@ -3,6 +3,7 @@ package com.gdg.slbackend.service.post;
 import com.gdg.slbackend.api.post.dto.PostRequest;
 import com.gdg.slbackend.api.post.dto.PostResponse;
 import com.gdg.slbackend.domain.post.Post;
+import com.gdg.slbackend.global.enums.Role;
 import com.gdg.slbackend.global.exception.ErrorCode;
 import com.gdg.slbackend.global.exception.GlobalException;
 import com.gdg.slbackend.global.util.S3Uploader;
@@ -112,9 +113,7 @@ public class PostService {
 
     private void validatePostModifyPermission(Post post, Long userId) {
         boolean isAuthor = post.getAuthorId().equals(userId);
-
-        // ✅ 인자 순서: (communityId, userId)
-        boolean isCommunityAdmin = communityMembershipFinder.isAdmin(post.getCommunityId(), userId);
+        boolean isCommunityAdmin = communityMembershipFinder.findAdminMembershipOrThrow(post.getCommunityId(), userId).getRole().equals(Role.ADMIN);
         boolean isSystemAdmin = userFinder.isSystemAdmin(userId);
 
         if (!isAuthor && !isCommunityAdmin && !isSystemAdmin) {

@@ -71,10 +71,11 @@ public class PostController {
     @Operation(summary = "Get posts with infinite scroll")
     public ResponseEntity<List<PostResponse>> getAllPosts(
             @PathVariable Long communityId,
-            @RequestParam(required = false) Long lastId
+            @RequestParam(required = false) Long lastId,
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
         return ResponseEntity.ok(
-                postService.getAllPosts(communityId, lastId)
+                postService.getAllPosts(communityId, lastId, principal.getId())
         );
     }
 

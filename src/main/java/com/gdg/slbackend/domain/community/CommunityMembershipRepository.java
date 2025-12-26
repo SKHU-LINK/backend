@@ -1,6 +1,5 @@
 package com.gdg.slbackend.domain.community;
 
-import com.gdg.slbackend.domain.user.User;
 import com.gdg.slbackend.global.enums.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,12 +13,6 @@ public interface CommunityMembershipRepository
     Optional<CommunityMembership> findByCommunityIdAndUserId(
             Long communityId,
             Long userId
-    );
-
-    boolean existsByCommunityIdAndUserIdAndRole(
-            Long communityId,
-            Long userId,
-            Role role
     );
 
     List<CommunityMembership> findAllByUserId(Long userId);

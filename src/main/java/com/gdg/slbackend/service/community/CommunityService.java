@@ -125,7 +125,9 @@ public class CommunityService {
             UserPrincipal principal,
             Long newAdminUserId
     ) {
-        if (!communityMembershipFinder.isAdmin(communityId, principal.getId())) {
+        CommunityMembership communityMembership = communityMembershipFinder.findByIdOrThrow(communityId, principal.getId());
+
+        if(!communityMembership.getRole().equals(Role.ADMIN)) {
             throw new GlobalException(ErrorCode.COMMUNITY_NOT_ADMIN);
         }
 
@@ -182,9 +184,14 @@ public class CommunityService {
     /* 커뮤니티 삭제 */
     @Transactional
     public void deleteCommunity(Long communityId, UserPrincipal principal) {
+        CommunityMembership communityMembership = communityMembershipFinder.findByIdOrThrow(communityId, principal.getId());
 
-        if (!communityMembershipFinder.isAdmin(communityId, principal.getId())) {
+        if(!communityMembership.getRole().equals(Role.ADMIN)) {
             throw new GlobalException(ErrorCode.COMMUNITY_NOT_ADMIN);
+        }
+
+        if (!userFinder.isSystemAdmin(principal.getId())) {
+            throw new GlobalException(ErrorCode.USER_NOT_SYSTEM_ADMIN);
         }
 
         communityDeleter.deleteById(communityId);
