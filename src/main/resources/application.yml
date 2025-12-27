@@ -74,9 +74,12 @@ spring:
     allow-credentials: true
 
 logging:
+  file:
+    name: /var/log/skhu-link/app.log
   level:
-    org.springframework.security: DEBUG
-    org.springframework.security.oauth2: DEBUG
+    root: INFO
+    org.springframework.security: INFO
+    org.springframework.security.oauth2: INFO
     com.gdg.slbackend.api.resource: DEBUG
 
 cloud:
