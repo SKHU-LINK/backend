@@ -86,24 +86,18 @@ public class PostService {
 
 
     public List<PostResponse> getAllPosts(Long communityId, Long lastId, Long userId) {
+        CommunityMembership communityMembership =
+                communityMembershipRepository
+                        .findByCommunityIdAndUserId(communityId, userId)
+                        .orElseGet(() -> {
+                            CommunityMembership cm =
+                                    communityMembershipCreator.createCommunityMembershipByCommunityId(
+                                            communityId, userId, Role.MEMBER, false);
+                            return communityMembershipRepository.save(cm);
+                        });
 
-        CommunityMembership communityMembership;
 
-        try {
-            communityMembership =
-                    communityMembershipFinder.findByIdOrThrow(communityId, userId);
-        } catch (EntityNotFoundException e) {
-            // 없으면 자동 가입
-            communityMembership =
-                    communityMembershipCreator.createCommunityMembershipByCommunityId(
-                            communityId,
-                            userId,
-                            Role.MEMBER,   // 기본 역할
-                            false          // pin 여부
-                    );
-
-            communityMembershipRepository.save(communityMembership);
-        }
+        communityMembershipRepository.save(communityMembership);
 
 
 
